@@ -39,8 +39,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng BCIT = new LatLng(49.122, -123.0006);
+        mMap.addMarker(new MarkerOptions().position(BCIT).title("BCIT"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(BCIT));
     }
 }
