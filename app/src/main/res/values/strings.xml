@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BCIT-Map</string>
+    <string name="title_activity_bcit__map">Map</string>
 </resources>
