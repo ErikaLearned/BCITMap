@@ -8,11 +8,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
+    // Create a LatLngBounds that includes the BCIT Burnaby campus.
+    private LatLngBounds burnabyCampus = new LatLngBounds(
+            new LatLng(49.254744, -123.004603), new LatLng(49.241535, -122.997872));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +41,10 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         // Move camera to middle of BCIT Burnaby campus
         LatLng BCIT = new LatLng(49.250717, -123.000490);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(BCIT));
+        // Constrain the camera target to the BCIT Burnaby campus
+        mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
     }
 }
