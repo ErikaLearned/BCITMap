@@ -17,7 +17,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
     // Create a LatLngBounds that includes the BCIT Burnaby campus.
     private LatLngBounds burnabyCampus = new LatLngBounds(
-            new LatLng(49.254744, -123.004603), new LatLng(49.241535, -122.997872));
+            new LatLng(49.2432,-123.006932), new LatLng(49.253,-122.99998));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
