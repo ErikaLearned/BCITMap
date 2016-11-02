@@ -17,4 +17,9 @@ public class Enterance_Screen extends AppCompatActivity {
         Intent intent = new Intent(this, BCIT_Map.class);
         startActivity(intent);
     }
+
+    protected void startDirections(View v) {
+        Intent intent = new Intent(this, DirectionsMenuActivity.class);
+        startActivity(intent);
+    }
 }

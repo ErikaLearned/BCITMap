@@ -36,7 +36,11 @@
 
         <activity
             android:name=".BCIT_Map"
-            android:label="@string/title_activity_bcit__map"></activity>
+            android:label="@string/title_activity_bcit__map" />
+        <activity
+            android:name=".DirectionsMenuActivity"
+            android:windowSoftInputMode="adjustNothing"
+            android:label="DirMenu"/>
     </application>
 
 </manifest>

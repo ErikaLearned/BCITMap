@@ -1,10 +1,69 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="a00954431.ca.bcit.comp3717.bcit_map.BCIT_Map"
-    map:mapType="normal"
-    map:cameraZoom="17"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".BCIT_Map" >
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="a00954431.ca.bcit.comp3717.bcit_map.BCIT_Map"
+        map:mapType="normal"
+        map:cameraZoom="17">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/floor1"
+        android:layout_gravity="right|top"
+        android:text="1"
+        android:tag="1"
+        android:padding="5dp"
+        android:onClick="setFloor"
+        android:layout_marginTop="0dp"
+        android:paddingRight="5dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/floor2"
+            android:layout_gravity="right|top"
+            android:text="2"
+            android:tag="2"
+            android:padding="5dp"
+            android:onClick="setFloor"
+            android:layout_marginTop="40dp"
+            android:paddingRight="5dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/floor3"
+            android:layout_gravity="right|top"
+            android:text="3"
+            android:tag="3"
+            android:padding="5dp"
+            android:onClick="setFloor"
+            android:layout_marginTop="80dp"
+            android:paddingRight="5dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/floor4"
+            android:layout_gravity="right|top"
+            android:text="4"
+            android:tag="4"
+            android:padding="5dp"
+            android:onClick="setFloor"
+            android:layout_marginTop="120dp"
+            android:paddingRight="5dp"/>
+
+</fragment>
+
+
+</RelativeLayout>
