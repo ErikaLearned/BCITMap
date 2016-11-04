@@ -5,12 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-public class Enterance_Screen extends AppCompatActivity {
+public class Entrance_Screen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enterance__screen);
+        setContentView(R.layout.activity_entrance__screen);
     }
 
     protected void startMap(View v) {
