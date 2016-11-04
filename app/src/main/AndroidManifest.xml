@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Enterance_Screen">
+        <activity android:name=".Entrance_Screen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +36,11 @@
 
         <activity
             android:name=".BCIT_Map"
-            android:label="@string/title_activity_bcit__map"></activity>
+            android:label="@string/title_activity_bcit__map" />
+        <activity
+            android:name=".Directions_Menu"
+            android:windowSoftInputMode="adjustNothing"
+            android:label="DirMenu"/>
     </application>
 
 </manifest>
