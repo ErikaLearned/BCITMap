@@ -19,7 +19,7 @@ public class Entrance_Screen extends AppCompatActivity {
     }
 
     protected void startDirections(View v) {
-        Intent intent = new Intent(this, DirectionsMenuActivity.class);
+        Intent intent = new Intent(this, Directions_Menu.class);
         startActivity(intent);
     }
 }

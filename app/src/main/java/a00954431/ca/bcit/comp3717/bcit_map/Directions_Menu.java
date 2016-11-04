@@ -20,7 +20,7 @@ import android.widget.Toast;
 import java.sql.Array;
 import java.util.ArrayList;
 
-public class DirectionsMenuActivity extends AppCompatActivity {
+public class Directions_Menu extends AppCompatActivity {
 
     ArrayList<String> roomList = new ArrayList<String>();
     ArrayList<String> roomList_FilteredTo = new ArrayList<String>();
