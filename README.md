@@ -17,35 +17,3 @@ A British Columbia Institute of Technology project by students in the Computer S
   * Washroom
   * Locker (saved)
   * Garbage/compost/recycling
-
-### Naming Guidelines
-#### General
-- Underscore separates significant phrases or words
-- Anything normally capitalized is capitalized
-```
-SE12_nsCoordinate
-BCIT_Map
-```
-#### Variable
-- Combine camel case with underscores
-- Start with lowercase
-```
-roomList
-roomList_FilteredTo
-SE_nwCoordinate
-SE12
-```
-#### Class
-- Start words in class names with capital letters
-```
-BCIT_Map
-Directions_Menu
-```
-#### Methods
-- Camelcase
-- Start with lowercase unless conflicting with a general guidelines
-```
-setStartButton
-startMap
-getSE12
-```
