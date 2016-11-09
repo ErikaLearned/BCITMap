@@ -44,10 +44,38 @@ public final class Polygon_Shapes {
     }
 
     /*
-     * Get-er: SE12
+     * Getter: SE12
      */
     public PolygonOptions getSE12() {
         return SE12;
+    }
+
+    /*
+     * Getter: SE color
+     */
+    public int getSE_Color() {
+        return SE_Color;
+    }
+
+    /*
+     * Getter: SW color
+     */
+    public int getSW_Color() {
+        return SW_Color;
+    }
+
+    /*
+     * Getter: NE color
+     */
+    public int getNE_Color() {
+        return NE_Color;
+    }
+
+    /*
+     * Getter: NW color
+     */
+    public int getNW_Color() {
+        return NW_Color;
     }
 
 
