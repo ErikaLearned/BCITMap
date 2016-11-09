@@ -16,10 +16,10 @@ import com.google.android.gms.maps.model.PolygonOptions;
 public final class Polygon_Shapes {
     // Building colors by location (SE, SW, NE, NW)
     // Colors were chosen base on an existing map for consistency
-    int SE_Color = Color.rgb(255, 218, 185); // peach
-    int SW_Color = Color.rgb(255,215,0); // yellow
-    int NE_Color = Color.rgb(50,205,50); // green
-    int NW_Color = Color.rgb(218,112,214); // purple
+    private int SE_Color = Color.rgb(255, 218, 185); // peach
+    private int SW_Color = Color.rgb(255,215,0); // yellow
+    private int NE_Color = Color.rgb(50,205,50); // green
+    private int NW_Color = Color.rgb(218,112,214); // purple
 
     // Buildings
     private static PolygonOptions SE12;
