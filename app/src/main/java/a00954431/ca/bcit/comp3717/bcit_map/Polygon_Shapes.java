@@ -1,6 +1,7 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
@@ -17,9 +18,9 @@ public final class Polygon_Shapes {
     // Building colors by location (SE, SW, NE, NW)
     // Colors were chosen base on an existing map for consistency
     private int SE_Color = Color.rgb(255, 218, 185); // peach
-    private int SW_Color = Color.rgb(255,215,0); // yellow
-    private int NE_Color = Color.rgb(50,205,50); // green
-    private int NW_Color = Color.rgb(218,112,214); // purple
+    private int SW_Color = Color.rgb(255,215,0);     // yellow
+    private int NE_Color = Color.rgb(50,205,50);     // green
+    private int NW_Color = Color.rgb(218,112,214);   // purple
 
     // Buildings
     private static PolygonOptions SE12;
