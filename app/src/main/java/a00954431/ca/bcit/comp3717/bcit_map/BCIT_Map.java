@@ -22,7 +22,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    int currentFloor;
+    private int currentFloor;
+    private Polygon_Shapes buildingShapes;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
@@ -59,6 +60,10 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
+
+        // Polygon Shapes initiate
+        buildingShapes = new Polygon_Shapes();
+        mMap.addPolygon(buildingShapes.getSE12());
     }
 
 
