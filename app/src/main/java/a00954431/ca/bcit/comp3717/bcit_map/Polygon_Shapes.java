@@ -22,14 +22,18 @@ public final class Polygon_Shapes {
     private int NE_Color = Color.rgb(50,205,50);     // green
     private int NW_Color = Color.rgb(218,112,214);   // purple
 
+    // Universal configurations for each building
+    private int strokeW = 0;
+
     // Buildings
     private static PolygonOptions SE12;
 
     // Coordinates of SE12
+    // TODO if there is time, adjust coordinates to encompass SE12 more fully
     private static final LatLng SE12_nwCorner = new LatLng(49.250432, -123.001742);
     private static final LatLng SE12_swCorner = new LatLng(49.249406, -123.001731);
     private static final LatLng SE12_seCorner = new LatLng(49.249406, -123.001401);
-    private static final LatLng SE12_neCorner = new LatLng(49.249406, -123.001401);
+    private static final LatLng SE12_neCorner = new LatLng(49.250440, -123.001412);
 
     /*
      * Polygon_Shapes constructor.
@@ -40,7 +44,8 @@ public final class Polygon_Shapes {
                      SE12_swCorner,
                      SE12_seCorner,
                      SE12_neCorner)
-                .fillColor(SE_Color);
+                .fillColor(SE_Color)
+                .strokeWidth(strokeW);
 
     }
 
