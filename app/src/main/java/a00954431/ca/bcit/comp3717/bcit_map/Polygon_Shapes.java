@@ -31,6 +31,8 @@ public final class Polygon_Shapes {
     private static PolygonOptions SE14;
         // SW
     private static PolygonOptions SW9;
+        // NE
+    private static PolygonOptions NE9;
 
 
     // TODO if there is time, adjust coordinates to encompass buildings more fully
@@ -46,6 +48,17 @@ public final class Polygon_Shapes {
     private static final LatLng SW9_nwCornerBox = new LatLng(49.248350, -123.003099);
     private static final LatLng SW9_neCornerBox = new LatLng(49.248354, -123.002891);
     private static final LatLng SW9_seCornerBox = new LatLng(49.248300, -123.002887);
+
+    // Coordinates of NE9
+    private static final LatLng NE9_neCorner = new LatLng(49.254341, -122.998319);
+    private static final LatLng NE9_nwCorner = new LatLng(49.254341, -122.998914);
+    private static final LatLng NE9_swCorner = new LatLng(49.253776, -122.998906);
+    private static final LatLng NE9_seCorner = new LatLng(49.253772, -122.998321);
+        // Jut in on the east side of NE9
+    private static final LatLng NE9_seCornerBox = new LatLng(49.253958, -122.998326);
+    private static final LatLng NE9_swCornerBox = new LatLng(49.253962, -122.998514);
+    private static final LatLng NE9_nwCornerBox = new LatLng(49.254209, -122.998503);
+    private static final LatLng NE9_neCornerBox = new LatLng(49.254212, -122.998322);
 
     // Coordinates of SE12
     private static final LatLng SE12_nwCorner = new LatLng(49.250432, -123.001742);
@@ -72,6 +85,18 @@ public final class Polygon_Shapes {
      * Polygon_Shapes constructor.
      */
     public Polygon_Shapes(){
+        NE9 = new PolygonOptions()
+                .add(NE9_neCorner,
+                        NE9_nwCorner,
+                        NE9_swCorner,
+                        NE9_seCorner,
+                        NE9_seCornerBox,
+                        NE9_swCornerBox,
+                        NE9_nwCornerBox,
+                        NE9_neCornerBox)
+                .fillColor(NE_Color)
+                .strokeWidth(strokeW);
+
         SE12 = new PolygonOptions()
                 .add(SE12_nwCorner,
                      SE12_swCorner,
@@ -105,6 +130,13 @@ public final class Polygon_Shapes {
                         SW9_seCornerBox)
                 .fillColor(SW_Color)
                 .strokeWidth(strokeW);
+    }
+
+    /*
+     * Getter: NE9
+     */
+    public PolygonOptions getNE9() {
+        return NE9;
     }
 
     /*
