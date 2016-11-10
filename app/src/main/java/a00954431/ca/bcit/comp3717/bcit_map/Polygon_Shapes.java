@@ -26,12 +26,26 @@ public final class Polygon_Shapes {
     private int strokeW = 0;
 
     // Buildings
+        // SE
     private static PolygonOptions SE12;
     private static PolygonOptions SE14;
+        // SW
+    private static PolygonOptions SW9;
 
 
     // TODO if there is time, adjust coordinates to encompass buildings more fully
-    // TODO do buildings: SE12, SE14
+    // TODO do buildings: SW9, SE12, SE14
+
+    // Coordinates of SW9
+    private static final LatLng SW9_seCorner = new LatLng(49.248297, -123.002026);
+    private static final LatLng SW9_neCorner = new LatLng(49.248835, -123.002031);
+    private static final LatLng SW9_nwCorner = new LatLng(49.248840, -123.003509);
+    private static final LatLng SW9_swCorner = new LatLng(49.248308, -123.003509);
+        // Jut in at the bottom of SW9
+    private static final LatLng SW9_swCornerBox = new LatLng(49.248310, -123.003101);
+    private static final LatLng SW9_nwCornerBox = new LatLng(49.248350, -123.003099);
+    private static final LatLng SW9_neCornerBox = new LatLng(49.248354, -123.002891);
+    private static final LatLng SW9_seCornerBox = new LatLng(49.248300, -123.002887);
 
     // Coordinates of SE12
     private static final LatLng SE12_nwCorner = new LatLng(49.250432, -123.001742);
@@ -79,6 +93,18 @@ public final class Polygon_Shapes {
                         SE14_neCorner)
                 .fillColor(SE_Color)
                 .strokeWidth(strokeW);
+
+        SW9 = new PolygonOptions()
+                .add(SW9_seCorner,
+                        SW9_neCorner,
+                        SW9_nwCorner,
+                        SW9_swCorner,
+                        SW9_swCornerBox,
+                        SW9_nwCornerBox,
+                        SW9_neCornerBox,
+                        SW9_seCornerBox)
+                .fillColor(SW_Color)
+                .strokeWidth(strokeW);
     }
 
     /*
@@ -93,6 +119,13 @@ public final class Polygon_Shapes {
      */
     public PolygonOptions getSE14() {
         return SE14;
+    }
+
+    /*
+     * Getter: SW9
+     */
+    public PolygonOptions getSW9() {
+        return SW9;
     }
 
     /*

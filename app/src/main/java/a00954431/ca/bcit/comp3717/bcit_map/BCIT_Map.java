@@ -63,8 +63,11 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
         // Polygon Shapes initiate
         buildingShapes = new Polygon_Shapes();
+            // SE
         mMap.addPolygon(buildingShapes.getSE12());
         mMap.addPolygon(buildingShapes.getSE14());
+            // SW
+        mMap.addPolygon(buildingShapes.getSW9());
     }
 
 
