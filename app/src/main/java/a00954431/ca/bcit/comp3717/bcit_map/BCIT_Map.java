@@ -30,8 +30,10 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
     GroundOverlay se14Overlay;
 
     // Create a LatLngBounds that includes the BCIT Burnaby campus.
+    // TODO update burnabyCampus boundaries to better encompass the campus.
     private LatLngBounds burnabyCampus = new LatLngBounds(
             new LatLng(49.2432,-123.006932), new LatLng(49.253,-122.99998));
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
