@@ -157,7 +157,8 @@ public final class Polygon_Shapes {
                         NW_swCornerBox,
                         NW_seCornerBox)
                 .fillColor(NW_Color)
-                .strokeWidth(strokeW);
+                .strokeWidth(strokeW)
+                ;
     }
 
     /*
