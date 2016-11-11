@@ -64,6 +64,10 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         // Constrain the camera target to the BCIT Burnaby campus
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
+        // Add markers to buildings
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249926, -123.001573))
+                                                        .title("SE12"));
+
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
     }
