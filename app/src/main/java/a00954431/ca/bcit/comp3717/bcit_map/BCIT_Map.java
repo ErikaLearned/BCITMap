@@ -1,5 +1,6 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentActivity;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.IconGenerator;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -64,12 +66,28 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         // Constrain the camera target to the BCIT Burnaby campus
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
-        // Add markers to buildings
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249926, -123.001573))
-                                                        .title("SE12"));
+        // Set labels on each building
+        setMarkers();
 
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
+    }
+
+    /*
+     * Sets bitmap markers to each building.
+     */
+    private void setMarkers() {
+        IconGenerator icon = new IconGenerator(this);
+
+        // SE12
+        Bitmap iconBitmap = icon.makeIcon("SE12");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249926, -123.001573)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        // SE14
+        iconBitmap = icon.makeIcon("SE14");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249379, -123.000811)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
     }
 
 
