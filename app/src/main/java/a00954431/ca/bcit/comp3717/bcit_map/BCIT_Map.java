@@ -70,6 +70,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         shape = new Polygon_Shapes();
         addBuildingOverlays(buildingShapes, shape);
         initBuildingOverlays(buildingShapes);
+
+        // TODO Make building overlays disappear when at a closer zoom level or when accessed by directions menu
     }
 
     /*
