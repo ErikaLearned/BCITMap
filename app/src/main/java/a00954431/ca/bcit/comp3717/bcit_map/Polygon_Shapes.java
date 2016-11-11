@@ -31,12 +31,25 @@ public final class Polygon_Shapes {
     private static PolygonOptions SE14;
         // SW
     private static PolygonOptions SW9;
+        // NW
+    private static PolygonOptions NW3;
         // NE
     private static PolygonOptions NE9;
 
 
-    // TODO if there is time, adjust coordinates to encompass buildings more fully
-    // TODO do buildings: SW9, SE12, SE14
+    /* TODO if there is time, adjust coordinates to encompass buildings more fully // buildings that are done: none */
+
+    // Coordinates of NW3
+    private static final LatLng NW3_swCorner = new LatLng(49.253090, -123.002794);
+    private static final LatLng NW3_seCorner = new LatLng(49.253083, -123.002275);
+    private static final LatLng NW3_neCorner = new LatLng(49.253405, -123.002276);
+    private static final LatLng NW3_nwCorner = new LatLng(49.253398, -123.002791);
+        // Long box to the left/west of NW3
+    private static final LatLng NW_neCornerBox = new LatLng(49.253431, -123.002802);
+    private static final LatLng NW_nwCornerBox = new LatLng(49.253426, -123.002958);
+    private static final LatLng NW_swCornerBox = new LatLng(49.253056, -123.002955);
+    private static final LatLng NW_seCornerBox = new LatLng(49.253067, -123.002794);
+
 
     // Coordinates of SW9
     private static final LatLng SW9_seCorner = new LatLng(49.248297, -123.002026);
@@ -49,6 +62,7 @@ public final class Polygon_Shapes {
     private static final LatLng SW9_neCornerBox = new LatLng(49.248354, -123.002891);
     private static final LatLng SW9_seCornerBox = new LatLng(49.248300, -123.002887);
 
+
     // Coordinates of NE9
     private static final LatLng NE9_neCorner = new LatLng(49.254341, -122.998319);
     private static final LatLng NE9_nwCorner = new LatLng(49.254341, -122.998914);
@@ -60,11 +74,13 @@ public final class Polygon_Shapes {
     private static final LatLng NE9_nwCornerBox = new LatLng(49.254209, -122.998503);
     private static final LatLng NE9_neCornerBox = new LatLng(49.254212, -122.998322);
 
+
     // Coordinates of SE12
     private static final LatLng SE12_nwCorner = new LatLng(49.250432, -123.001742);
     private static final LatLng SE12_swCorner = new LatLng(49.249406, -123.001731);
     private static final LatLng SE12_seCorner = new LatLng(49.249406, -123.001401);
     private static final LatLng SE12_neCorner = new LatLng(49.250440, -123.001412);
+
 
     // Coordinates of SE14
         // SE12 - SE14 connector
@@ -130,6 +146,25 @@ public final class Polygon_Shapes {
                         SW9_seCornerBox)
                 .fillColor(SW_Color)
                 .strokeWidth(strokeW);
+
+        NW3 = new PolygonOptions()
+                .add(NW3_swCorner,
+                        NW3_seCorner,
+                        NW3_neCorner,
+                        NW3_nwCorner,
+                        NW_neCornerBox,
+                        NW_nwCornerBox,
+                        NW_swCornerBox,
+                        NW_seCornerBox)
+                .fillColor(NW_Color)
+                .strokeWidth(strokeW);
+    }
+
+    /*
+     * Getter: Nw3
+     */
+    public PolygonOptions getNW3() {
+        return NW3;
     }
 
     /*

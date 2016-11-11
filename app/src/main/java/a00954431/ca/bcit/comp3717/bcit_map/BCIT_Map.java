@@ -61,13 +61,15 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
 
-        // Polygon Shapes initiate
+        // Initiate polygon shapes
         buildingShapes = new Polygon_Shapes();
             // SE
         mMap.addPolygon(buildingShapes.getSE12());
         mMap.addPolygon(buildingShapes.getSE14());
             // SW
         mMap.addPolygon(buildingShapes.getSW9());
+            // NW
+        mMap.addPolygon(buildingShapes.getNW3());
             // NE
         mMap.addPolygon(buildingShapes.getNE9());
     }
