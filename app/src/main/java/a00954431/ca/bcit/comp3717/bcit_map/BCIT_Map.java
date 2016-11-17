@@ -155,7 +155,13 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         }
         switch(currentFloor) {
             case R.id.floor1: {
-
+                GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
+                        .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f1m))
+                        .positionFromBounds(new LatLngBounds(
+                                new LatLng(49.249360, -123.002164),     // South west corner
+                                new LatLng(49.250528, -123.001075)      // North east corner
+                        ));
+                groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
                 break;
             }
             case R.id.floor2: {
@@ -172,14 +178,20 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f3m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249377, -123.001834),       // South west corner
+                                new LatLng(49.249377, -123.001834),     // South west corner
                                 new LatLng(49.250505, -123.001316)      // North east corner
                         ));
                 groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
                 break;
             }
             case R.id.floor4: {
-
+                GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
+                        .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f4m))
+                        .positionFromBounds(new LatLngBounds(
+                                new LatLng(49.249377, -123.001834),     // South west corner
+                                new LatLng(49.250505, -123.001316)      // North east corner
+                        ));
+                groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
                 break;
             }
             default: {
