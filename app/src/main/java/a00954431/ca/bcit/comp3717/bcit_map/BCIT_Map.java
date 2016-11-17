@@ -82,8 +82,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f2m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249367, -123.001782),       // South west corner
-                                new LatLng(49.250463, -123.001364)      // North east corner
+                                new LatLng(49.249406, -123.002147),     // South west corner
+                                new LatLng(49.250502, -123.001133)      // North east corner
                         ));
                 groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
                 break;
