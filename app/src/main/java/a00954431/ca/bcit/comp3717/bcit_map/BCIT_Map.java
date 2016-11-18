@@ -14,7 +14,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
@@ -24,10 +23,9 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 
-import static java.security.AccessController.getContext;
-
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
+    private String TAG = BCIT_Map.class.getName();
     private GoogleMap mMap;
     int currentFloor;
 
@@ -69,10 +67,10 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
             if (!success) {
-                Log.e("MapsActivityRaw", "Style parsing failed.");
+                Log.e(TAG, "Style parsing failed.");
             }
         } catch (Resources.NotFoundException e) {
-            Log.e("MapsActivityRaw", "Can't find style.", e);
+            Log.e(TAG, "Can't find style.", e);
         }
 
         // Move camera to middle of BCIT Burnaby campus
