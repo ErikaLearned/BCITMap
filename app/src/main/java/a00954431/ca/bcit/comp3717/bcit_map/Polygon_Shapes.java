@@ -191,6 +191,13 @@ public final class Polygon_Shapes {
     }
 
     /*
+     * Get a list of all the building overlay objects.
+     */
+    public ArrayList<PolygonOptions> getBuildingList() {
+        return buildings;
+    }
+
+    /*
      * Getter: Nw3
      */
     public PolygonOptions getNW3() {
