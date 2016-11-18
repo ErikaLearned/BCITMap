@@ -4,8 +4,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,12 +25,15 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
 
-public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
-
+public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
+                                                          GoogleMap.OnCameraMoveListener {
+    private String TAG = BCIT_Map.class.getName();
     private GoogleMap mMap;
     private int currentFloor;
     private ArrayList<Polygon> buildings;
     private Polygon_Shapes shape;
+    private float zoom;
+    private float turnOffAtZoom = (float)17.5;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
@@ -58,6 +63,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnCameraMoveListener(this);
+
         // Move camera to middle of BCIT Burnaby campus
         LatLng BCIT = new LatLng(49.250899, -123.001488);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(BCIT));
@@ -72,6 +79,18 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         initBuildingOverlays(shape.getBuildings(), buildings);
         // TODO Make building overlays disappear when at a closer zoom level or when accessed by directions menu
     }
+
+    @Override
+    public void onCameraMove() {
+        zoom = mMap.getCameraPosition().zoom;
+
+        if(zoom > turnOffAtZoom) {
+            shape.turnOffBuildings(buildings);
+        } else {
+            shape.turnOnBuildings(buildings);
+        }
+    }
+
 
     /*
      * Adds polygon options to the map.
