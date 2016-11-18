@@ -7,6 +7,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.util.ArrayList;
+
 /**
  * Polygon_Shapes.java
  * Contains the polygon shapes needed to overlay on all the BCIT Burnaby buildings on a google map.
@@ -15,6 +17,9 @@ import com.google.android.gms.maps.model.PolygonOptions;
  */
 
 public final class Polygon_Shapes {
+    // List containing all buildings
+    private ArrayList<PolygonOptions> buildings;
+
     // Building colors by location (SE, SW, NE, NW)
     // Colors were chosen base on an existing map for consistency
     private int SE_Color = Color.rgb(255, 218, 185); // peach
@@ -101,6 +106,7 @@ public final class Polygon_Shapes {
      * Polygon_Shapes constructor.
      */
     public Polygon_Shapes(){
+        buildings = new ArrayList<PolygonOptions>();
         NE9 = new PolygonOptions()
                 .add(NE9_neCorner,
                         NE9_nwCorner,
@@ -112,6 +118,7 @@ public final class Polygon_Shapes {
                         NE9_neCornerBox)
                 .fillColor(NE_Color)
                 .strokeWidth(strokeW);
+        buildings.add(NE9);
 
         SE12 = new PolygonOptions()
                 .add(SE12_nwCorner,
@@ -120,6 +127,7 @@ public final class Polygon_Shapes {
                      SE12_neCorner)
                 .fillColor(SE_Color)
                 .strokeWidth(strokeW);
+        buildings.add(SE12);
 
         SE14 = new PolygonOptions()
                 .add(SE14_neCornerConnectJoin,
@@ -134,6 +142,7 @@ public final class Polygon_Shapes {
                         SE14_neCorner)
                 .fillColor(SE_Color)
                 .strokeWidth(strokeW);
+        buildings.add(SE14);
 
         SW9 = new PolygonOptions()
                 .add(SW9_seCorner,
@@ -146,6 +155,7 @@ public final class Polygon_Shapes {
                         SW9_seCornerBox)
                 .fillColor(SW_Color)
                 .strokeWidth(strokeW);
+        buildings.add(SW9);
 
         NW3 = new PolygonOptions()
                 .add(NW3_swCorner,
@@ -159,6 +169,25 @@ public final class Polygon_Shapes {
                 .fillColor(NW_Color)
                 .strokeWidth(strokeW)
                 ;
+        buildings.add(NW3);
+    }
+
+    /*
+     * Make all the building polygon overlays invisible.
+     */
+    public void turnOffBuildings() {
+        for (PolygonOptions build: buildings) {
+            build.visible(false);
+        }
+    }
+
+    /*
+     * Make all the building polygon overlays visible.
+     */
+    public void turnOnBuildings() {
+        for (PolygonOptions build: buildings) {
+            build.visible(true);
+        }
     }
 
     /*
@@ -223,6 +252,4 @@ public final class Polygon_Shapes {
     public int getNW_Color() {
         return NW_Color;
     }
-
-
 }
