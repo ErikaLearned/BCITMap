@@ -11,6 +11,7 @@ public class Entrance_Screen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrance__screen);
+        NodeDir.initMapDB(this);
     }
 
     protected void startMap(View v) {
