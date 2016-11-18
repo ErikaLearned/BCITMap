@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
@@ -45,6 +46,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     private Polygon_Shapes shape;
     private ArrayList<Marker> buildingMarkers;
     private Building_Markers markers;
+    private Building_Floorplan building_floorplan;
+    private TreeMap<String, GroundOverlayOptions> floorplans;
 
     float turnOffAtZoom = (float) 17.5;
     float turnOffBuildingLabels = (float) 16.5;
@@ -104,8 +107,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
 
-        currentFloor = R.id.floor1;
-        setFloor(findViewById(R.id.floor1));
+
 
         // Init polygon shapes over buildings
         shape = new Polygon_Shapes();
@@ -115,6 +117,14 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         // Set labels on each building
         markers = new Building_Markers(this, mMap);
         buildingMarkers = markers.getBuildingNameMarkers();
+
+        // Grab all floorplans
+        building_floorplan = new Building_Floorplan();
+        floorplans = building_floorplan.getFloorPlans();
+        boolean contains = floorplans.containsKey("se12f4m");
+
+        currentFloor = R.id.floor1;
+        setFloor(findViewById(R.id.floor1));
 
         paths.clear();
         Bundle extras = getIntent().getExtras();
@@ -181,6 +191,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     }
 
     public void setFloor(View v) {
+        GroundOverlayOptions plan;
         int floorNum = v.getId();
         Button fc = (Button) findViewById(currentFloor);
         fc.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
@@ -193,54 +204,32 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         }
         switch (currentFloor) {
             case R.id.floor1: {
-                GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f1m))
-                        .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249360, -123.002164),     // South west corner
-                                new LatLng(49.250543, -123.001071)      // North east corner
-                        ));
-                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
-
+                plan = floorplans.get("se12f1m");
+                groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
                     drawDirections(1);
                 }
                 break;
             }
             case R.id.floor2: {
-                GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f2m))
-                        .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249360, -123.002164),     // South west corner
-                                new LatLng(49.250528, -123.001075)      // North east corner
-                                //testpost
-                        ));
-                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
+                plan = floorplans.get("se12f2m");
+                groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
                     drawDirections(2);
                 }
                 break;
             }
             case R.id.floor3: {
-                GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f3m))
-                        .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249377, -123.001834),     // South west corner
-                                new LatLng(49.250505, -123.001316)      // North east corner
-                        ));
-                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
+                plan = floorplans.get("se12f3m");
+                groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
                     drawDirections(3);
                 }
                 break;
             }
             case R.id.floor4: {
-                GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f4m))
-                        .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249377, -123.001834),     // South west corner
-                                new LatLng(49.250505, -123.001316)      // North east corner
-                        ));
-                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
+                plan = floorplans.get("se12f4m");
+                groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
 
                 if (!paths.isEmpty()) {
                     drawDirections(4);
