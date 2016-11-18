@@ -175,25 +175,25 @@ public final class Polygon_Shapes {
     /*
      * Make all the building polygon overlays invisible.
      */
-    public void turnOffBuildings() {
-        for (PolygonOptions build: buildings) {
-            build.visible(false);
+    public void turnOffBuildings(ArrayList<Polygon> poly) {
+        for (Polygon p: poly) {
+            p.setVisible(false);
         }
     }
 
     /*
      * Make all the building polygon overlays visible.
      */
-    public void turnOnBuildings() {
-        for (PolygonOptions build: buildings) {
-            build.visible(true);
+    public void turnOnBuildings(ArrayList<Polygon> poly) {
+        for (Polygon p: poly) {
+            p.setVisible(true);
         }
     }
 
     /*
-     * Get a list of all the building overlay objects.
+     * Make all the building polygon overlays visible.
      */
-    public ArrayList<PolygonOptions> getBuildingList() {
+    public ArrayList<PolygonOptions> getBuildings() {
         return buildings;
     }
 

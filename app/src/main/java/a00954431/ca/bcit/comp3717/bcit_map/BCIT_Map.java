@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private int currentFloor;
-    private ArrayList<PolygonOptions> buildingShapes;
+    private ArrayList<Polygon> buildings;
     private Polygon_Shapes shape;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
@@ -66,53 +67,20 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
         setFloor(findViewById(R.id.floor1));
 
         // Init polygon shapes over buildings
-        buildingShapes = new ArrayList<PolygonOptions>();
         shape = new Polygon_Shapes();
-        addBuildingOverlays(buildingShapes, shape);
-        initBuildingOverlays(buildingShapes);
-
+        buildings = new ArrayList<Polygon>();
+        initBuildingOverlays(shape.getBuildings(), buildings);
         // TODO Make building overlays disappear when at a closer zoom level or when accessed by directions menu
     }
 
     /*
-     * Adds polygon options to the arraylist
+     * Adds polygon options to the map.
      */
-    private void addBuildingOverlays(ArrayList<PolygonOptions> list, Polygon_Shapes shape) {
-        // SE
-        list.add(shape.getSE12());
-        list.add(shape.getSE14());
-        // SW
-        list.add(shape.getSW9());
-        // NW
-        list.add(shape.getNW3());
-        // NE
-        list.add(shape.getNE9());
-    }
-
-    /*
-     * Adds polygon options to the map and make them visible.
-     */
-    private void initBuildingOverlays(ArrayList<PolygonOptions> list) {
+    private void initBuildingOverlays(ArrayList<PolygonOptions> list,
+                                      ArrayList<Polygon> buildings) {
         for(int i = 0; i < list.size(); i++) {
-            mMap.addPolygon(list.get(i).visible(true));
-        }
-    }
-
-    /*
-     * Makes polygon options visible.
-     */
-    private void visiblePolyOptions(ArrayList<PolygonOptions> list) {
-        for(int i = 0; i < list.size(); i++) {
-            list.get(i).visible(true);
-        }
-    }
-
-    /*
-     * Makes polygon options invisible.
-     */
-    private void invisiblePolyOptions(ArrayList<PolygonOptions> list) {
-        for(int i = 0; i < list.size(); i++) {
-            list.get(i).visible(false);
+            Polygon poly = mMap.addPolygon(list.get(i));
+            buildings.add(poly);
         }
     }
 
