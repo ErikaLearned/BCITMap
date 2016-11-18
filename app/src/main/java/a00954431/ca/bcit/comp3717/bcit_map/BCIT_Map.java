@@ -197,7 +197,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f1m))
                         .positionFromBounds(new LatLngBounds(
                                 new LatLng(49.249360, -123.002164),     // South west corner
-                                new LatLng(49.250528, -123.001075)      // North east corner
+                                new LatLng(49.250543, -123.001071)      // North east corner
                         ));
                 groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
 
@@ -210,8 +210,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f2m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249365086234455, -123.00208780914544),       // South west corner
-                                new LatLng(49.2505254554666, -123.00113193690777)      // North east corner
+                                new LatLng(49.249360, -123.002164),     // South west corner
+                                new LatLng(49.250528, -123.001075)      // North east corner
                                 //testpost
                         ));
                 groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
@@ -224,8 +224,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f3m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249368, -123.001789),       // South west corner
-                                new LatLng(49.250480, -123.001330)      // North east corner
+                                new LatLng(49.249377, -123.001834),     // South west corner
+                                new LatLng(49.250505, -123.001316)      // North east corner
                         ));
                 groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
                 if (!paths.isEmpty()) {
