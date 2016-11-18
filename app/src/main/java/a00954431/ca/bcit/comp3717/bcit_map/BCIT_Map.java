@@ -92,7 +92,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
         // Set labels on each building
-        setMarkers();
+        Building_Markers markers = new Building_Markers(this, mMap);
 
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
@@ -125,74 +125,6 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             Polygon poly = mMap.addPolygon(list.get(i));
             buildings.add(poly);
         }
-    }
-
-    /*
-     * Sets bitmap markers to each building.
-     */
-    private void setMarkers() {
-        IconGenerator icon = new IconGenerator(this);
-
-        // SE
-        Bitmap iconBitmap = icon.makeIcon("SE1");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251029, -122.999057)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE2\nGreat Hall");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251337, -123.001294)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE4");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251242, -123.000092)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE6");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.250836, -123.000462)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE8");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.250692, -123.001412)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE10");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249782, -123.000645)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE12");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249926, -123.001573)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE14\nLibrary");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249379, -123.000811)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE16\nRecreation Center");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.248665, -123.000978)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE19");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.248882, -122.998591)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE30");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.246131, -122.998702)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE40");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243363, -122.998737)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE41");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243741, -122.999338)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE42");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243275, -122.999536)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE50");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.242520, -122.998954)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
     }
 
 
