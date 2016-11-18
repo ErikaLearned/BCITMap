@@ -1,5 +1,6 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentActivity;
@@ -19,11 +20,21 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                                                           GoogleMap.OnCameraMoveListener {
@@ -37,8 +48,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
-    GroundOverlay se12Overlay;
-    GroundOverlay se14Overlay;
+    ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
+    ArrayList<Polyline> lines = new ArrayList<Polyline>();
+    ArrayList<Marker> directionMarkers = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +90,33 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         buildings = new ArrayList<Polygon>();
         initBuildingOverlays(shape.getBuildings(), buildings);
         // TODO Make building overlays disappear when at a closer zoom level or when accessed by directions menu
+
+        paths.clear();
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            String[] from =  extras.getString("fromLocation").split("-");
+            String[] to = extras.getString("toLocation").split("-");
+            Node nFrom = NodeDir.mapDB.getNodeByRoom(from[0], from[1]);
+            if (nFrom == null) {
+                nFrom = NodeDir.mapDB.getNodeByName(from[1]);
+            }
+            Node nTo = NodeDir.mapDB.getNodeByRoom(to[0], to[1]);
+            if (nTo == null) {
+                nTo = NodeDir.mapDB.getNodeByName(to[1]);
+            }
+            generateDirections(nFrom, nTo);
+        } else {
+            setMarkers();
+        }
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.d("X", latLng.toString());
+
+            }
+        });
+
     }
 
     @Override
@@ -118,30 +157,43 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         switch(currentFloor) {
             case R.id.floor1: {
 
+                if (!paths.isEmpty()) {
+                    drawDirections(1);
+                }
                 break;
             }
             case R.id.floor2: {
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f2m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249406, -123.002147),     // South west corner
-                                new LatLng(49.250502, -123.001133)      // North east corner
+                                new LatLng(49.249365086234455,-123.00208780914544),       // South west corner
+                                new LatLng(49.2505254554666,-123.00113193690777)      // North east corner
+                                //testpost
                         ));
                 groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
+                if (!paths.isEmpty()) {
+                    drawDirections(2);
+                }
                 break;
             }
             case R.id.floor3: {
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f3m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249367, -123.001782),       // South west corner
-                                new LatLng(49.250463, -123.001364)      // North east corner
+                                new LatLng(49.249368, -123.001789),       // South west corner
+                                new LatLng(49.250480, -123.001330)      // North east corner
                         ));
                 groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
+                if (!paths.isEmpty()) {
+                    drawDirections(3);
+                }
                 break;
             }
             case R.id.floor4: {
 
+                if (!paths.isEmpty()) {
+                    drawDirections(4);
+                }
                 break;
             }
             default: {
@@ -149,6 +201,211 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 break;
             }
         }
+    }
+
+    /*
+     * Sets bitmap markers to each building.
+     */
+    private void setMarkers() {
+        IconGenerator icon = new IconGenerator(this);
+
+        // SE
+        Bitmap iconBitmap = icon.makeIcon("SE1");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251029, -122.999057)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE2\nGreat Hall");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251337, -123.001294)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE4");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251242, -123.000092)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE6");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.250836, -123.000462)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE8");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.250692, -123.001412)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE10");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249782, -123.000645)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE12");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249926, -123.001573)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE14\nLibrary");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249379, -123.000811)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE16\nRecreation Center");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.248665, -123.000978)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE19");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.248882, -122.998591)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE30");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.246131, -122.998702)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE40");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243363, -122.998737)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE41");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243741, -122.999338)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE42");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243275, -122.999536)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        iconBitmap = icon.makeIcon("SE50");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(49.242520, -122.998954)))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+    }
+
+    protected void generateDirections(Node start, Node to){
+
+        LinkedBlockingQueue<Node> path = findPath(start, to, false);
+
+        IconGenerator icon = new IconGenerator(this);
+
+        Bitmap iconBitmap = icon.makeIcon("CURRENT");
+        mMap.addMarker(new MarkerOptions().position(start.loc))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        String iconTag;
+        if (!to.roomNum.equals("") && !to.building.equals("")) {
+            iconTag = to.building + "-" + to.roomNum;
+        } else {
+            iconTag = to.roomName;
+        }
+        iconBitmap = icon.makeIcon(iconTag);
+        mMap.addMarker(new MarkerOptions().position(to.loc))
+                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+        paths.clear();
+        directionMarkers.clear();
+        int floor = 0;
+        int pathNum = -1;
+        for (Node node : path) {
+            if (node.floor != floor) {
+
+                paths.add(new ArrayList<Node>());
+
+                if (node.floor > floor) {
+                    iconBitmap = icon.makeIcon("Down to floor " + floor);
+                } else {
+                    iconBitmap = icon.makeIcon("Up to floor " + floor);
+                }
+
+                Marker mark = mMap.addMarker(new MarkerOptions().position(node.loc));
+                mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+                mark.setVisible(false);
+                mark.setTag(node.floor);
+                directionMarkers.add(mark);
+                floor = node.floor;
+                pathNum++;
+            }
+            paths.get(pathNum).add(node);
+        }
+        directionMarkers.remove(0);
+        switch (start.floor) {
+            case 1:
+                setFloor(findViewById(R.id.floor1));
+                break;
+            case 2:
+                setFloor(findViewById(R.id.floor2));
+                break;
+            case 3:
+                setFloor(findViewById(R.id.floor3));
+                break;
+            case 4:
+                setFloor(findViewById(R.id.floor4));
+                break;
+        }
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
+
+    }
+
+    public void drawDirections(int floor) {
+        for(Polyline line : lines)  {
+            line.remove();
+        }
+        lines.clear();
+        for (ArrayList<Node> path : paths) {
+            if (path.get(0).floor == floor) {
+                PolylineOptions options = new PolylineOptions().width(5).color(Color.RED);
+                for (Node node : path) {
+                    options.add(node.loc);
+                }
+                Polyline line = mMap.addPolyline(options);
+                lines.add(line);
+            }
+        }
+        for (Marker mark : directionMarkers) {
+            if ((int)mark.getTag() == floor) {
+                mark.setVisible(true);
+            } else {
+                mark.setVisible(false);
+            }
+        }
+    }
+
+    // Comparision method for A* path finding.
+    float heuristic(Node a, Node b) {
+        return a.getDistanceTo(b);
+    }
+
+    // Gets unit path by A* path finding.
+    public LinkedBlockingQueue<Node> findPath(Node start, Node end, boolean noOutside) {
+        Comparator<Node> comparator = new NodeLengthComparator();
+        LinkedBlockingQueue<Node> path = new LinkedBlockingQueue<Node>();
+        PriorityQueue<Node> frontier = new PriorityQueue<Node>(11, comparator);
+        Set<Integer> visited = new HashSet<Integer>();
+        frontier.add(start);
+        HashMap<Node, Node> cameFrom = new HashMap<Node, Node>();
+        HashMap<Node, Integer> cost = new HashMap<Node, Integer>();
+        cameFrom.put(start, null);
+        cost.put(start, 0);
+        while (!frontier.isEmpty()) {
+            Node current = frontier.peek();
+            //Log.d("X", current.key.toString());
+            if (current.key == end.key) {
+                break;
+            }
+            frontier.poll();
+            for (Integer nei : current.neighbours) {
+                Node neiNode = NodeDir.mapDB.getNodeByKey(nei);
+                if ((!noOutside || !neiNode.outside) && !visited.contains(neiNode.key)) {
+                    int newCost = cost.get(current) + 1;
+                    if (!cost.containsKey(neiNode) || newCost < cost.get(neiNode)) {
+                        cost.put(neiNode, newCost);
+                        neiNode.distance = newCost + heuristic(end, neiNode);
+                        cameFrom.put(neiNode, current);
+                        visited.add(neiNode.key);
+                        frontier.add(neiNode);
+                    }
+                }
+            }
+        }
+        // Converts path to deque for use
+        Node current = frontier.peek();
+        while (current != start) {
+            path.add(current);
+            Node nep = cameFrom.get(current);
+            current = nep;
+        }
+        path.add(start);
+        return path;
     }
 
 }

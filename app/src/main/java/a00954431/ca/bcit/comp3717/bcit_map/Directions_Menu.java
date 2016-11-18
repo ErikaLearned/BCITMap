@@ -1,10 +1,14 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Directions_Menu extends AppCompatActivity {
 
@@ -35,8 +40,14 @@ public class Directions_Menu extends AppCompatActivity {
         Button dirButt = (Button) findViewById(R.id.getDirections);
         dirButt.setEnabled(false);
 
-        for(int i = 301; i < 354; ++i) {
-            roomList.add("SE12-"+String.valueOf(i));
+        ArrayList<Node> dbList = NodeDir.mapDB.getAllNodes();
+
+        for(Node node : dbList) {
+            if (!node.roomNum.equals("")) {
+                roomList.add(node.building + "-" + node.roomNum);
+            } else if (!node.roomName.equals("")) {
+                roomList.add(node.building + "-" + node.roomName);
+            }
         }
 
         ListView listViewFrom = (ListView)findViewById(R.id.listViewFrom);
@@ -140,13 +151,48 @@ public class Directions_Menu extends AppCompatActivity {
         }
     }
 
-    protected void checkIfValidDirection(View v){
+    protected void startDirections(View v) {
         EditText fromText = (EditText)findViewById(R.id.fromSearch);
         String searchFrom = fromText.getText().toString().toLowerCase();
         EditText toText = (EditText)findViewById(R.id.toSearch);
-        String searchTo = fromText.getText().toString().toLowerCase();
-        Button dirButt = (Button) findViewById(R.id.getDirections);
-        // TODO
+        String searchTo = toText.getText().toString().toLowerCase();
+        if (!checkIfValidDirection(searchFrom)) {
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Direction Error");
+            alertDialog.setMessage("Location " + searchFrom + " cannot be found.");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        } else if (!checkIfValidDirection(searchTo)) {
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Direction Error");
+            alertDialog.setMessage("Location " + searchTo + " cannot be found.");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        } else {
+            Intent intent = new Intent(this, BCIT_Map.class);
+            intent.putExtra("fromLocation", searchFrom);
+            intent.putExtra("toLocation", searchTo);
+            startActivity(intent);
+        }
+    }
+
+    protected boolean checkIfValidDirection(String location){
+        for (String room : roomList) {
+            if (location.equals(room.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

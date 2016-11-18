@@ -45,25 +45,25 @@
             android:layout_width="183dp"
             android:layout_height="match_parent"
             android:fillViewport="true" >
-        <ListView
-            android:id="@+id/listViewFrom"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_weight="0.5"
-            android:layout_marginTop="27dp">
-        </ListView>
+            <ListView
+                android:id="@+id/listViewFrom"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_weight="0.5"
+                android:layout_marginTop="27dp">
+            </ListView>
         </ScrollView>
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="183dp"
             android:layout_height="match_parent"
             android:fillViewport="true" >
-        <ListView
-            android:id="@+id/listViewTo"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_weight="0.5"
-            android:layout_marginTop="27dp">
-        </ListView>
+            <ListView
+                android:id="@+id/listViewTo"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_weight="0.5"
+                android:layout_marginTop="27dp">
+            </ListView>
         </ScrollView>
 
     </LinearLayout>
@@ -73,7 +73,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/getDirections"
-        android:onClick="checkIfValidDirection"
+        android:onClick="startDirections"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
