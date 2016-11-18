@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
@@ -46,7 +44,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     private ArrayList<Polygon> buildings;
     private Polygon_Shapes shape;
     private float zoom;
-    private float turnOffAtZoom = (float)17.5;
+    private float turnOffAtZoom = (float) 17.5;
+    private ArrayList<Marker> buildingMarkers;
+    private Building_Markers markers;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
@@ -57,7 +57,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     // Create a LatLngBounds that includes the BCIT Burnaby campus.
     // TODO update burnabyCampus boundaries to better encompass the campus.
     private LatLngBounds burnabyCampus = new LatLngBounds(
-            new LatLng(49.2432,-123.006932), new LatLng(49.253,-122.99998));
+            new LatLng(49.2432, -123.006932), new LatLng(49.253, -122.99998));
 
 
     @Override
@@ -92,17 +92,16 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style.", e);
         }
+
         mMap.setOnCameraMoveListener(this);
 
         // Move camera to middle of BCIT Burnaby campus
         LatLng BCIT = new LatLng(49.250899, -123.001488);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(BCIT));
-		
+
         // Constrain the camera target to the BCIT Burnaby campus
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
-        // Set labels on each building
-        setMarkers();
 
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
@@ -111,12 +110,15 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         shape = new Polygon_Shapes();
         buildings = new ArrayList<Polygon>();
         initBuildingOverlays(shape.getBuildings(), buildings);
-        // TODO Make building overlays disappear when at a closer zoom level or when accessed by directions menu
+
+        // Set labels on each building
+        markers = new Building_Markers(this, mMap);
+        buildingMarkers = markers.getBuildingNameMarkers();
 
         paths.clear();
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
-            String[] from =  extras.getString("fromLocation").split("-");
+        if (extras != null) {
+            String[] from = extras.getString("fromLocation").split("-");
             String[] to = extras.getString("toLocation").split("-");
             Node nFrom = NodeDir.mapDB.getNodeByRoom(from[0], from[1]);
             if (nFrom == null) {
@@ -145,10 +147,12 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     public void onCameraMove() {
         zoom = mMap.getCameraPosition().zoom;
 
-        if(zoom > turnOffAtZoom) {
+        if (zoom > turnOffAtZoom) {
             shape.turnOffBuildings(buildings);
+            markers.turnOffMarkers(buildingMarkers);
         } else {
             shape.turnOnBuildings(buildings);
+            markers.turnOnMarkers(buildingMarkers);
         }
     }
 
@@ -158,25 +162,24 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
      */
     private void initBuildingOverlays(ArrayList<PolygonOptions> list,
                                       ArrayList<Polygon> buildings) {
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             Polygon poly = mMap.addPolygon(list.get(i));
             buildings.add(poly);
         }
     }
 
-
     public void setFloor(View v) {
         int floorNum = v.getId();
         Button fc = (Button) findViewById(currentFloor);
-        fc.getBackground().setColorFilter(Color.LTGRAY,PorterDuff.Mode.MULTIPLY);
-        v.getBackground().setColorFilter(Color.BLUE,PorterDuff.Mode.MULTIPLY);
+        fc.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+        v.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
         currentFloor = floorNum;
-        for(GroundOverlay go : groundOverlaysSE) {
+        for (GroundOverlay go : groundOverlaysSE) {
             if (go != null) {
                 go.remove();
             }
         }
-        switch(currentFloor) {
+        switch (currentFloor) {
             case R.id.floor1: {
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f1m))
@@ -184,7 +187,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                                 new LatLng(49.249360, -123.002164),     // South west corner
                                 new LatLng(49.250528, -123.001075)      // North east corner
                         ));
-                groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
+                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
 
                 if (!paths.isEmpty()) {
                     drawDirections(1);
@@ -195,11 +198,11 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 GroundOverlayOptions se12OverlayOption = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.se12f2m))
                         .positionFromBounds(new LatLngBounds(
-                                new LatLng(49.249365086234455,-123.00208780914544),       // South west corner
-                                new LatLng(49.2505254554666,-123.00113193690777)      // North east corner
+                                new LatLng(49.249365086234455, -123.00208780914544),       // South west corner
+                                new LatLng(49.2505254554666, -123.00113193690777)      // North east corner
                                 //testpost
                         ));
-                groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
+                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
                 if (!paths.isEmpty()) {
                     drawDirections(2);
                 }
@@ -212,7 +215,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                                 new LatLng(49.249368, -123.001789),       // South west corner
                                 new LatLng(49.250480, -123.001330)      // North east corner
                         ));
-                groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
+                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
                 if (!paths.isEmpty()) {
                     drawDirections(3);
                 }
@@ -225,7 +228,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                                 new LatLng(49.249377, -123.001834),     // South west corner
                                 new LatLng(49.250505, -123.001316)      // North east corner
                         ));
-                groundOverlaysSE[7] =  mMap.addGroundOverlay(se12OverlayOption);
+                groundOverlaysSE[7] = mMap.addGroundOverlay(se12OverlayOption);
 
                 if (!paths.isEmpty()) {
                     drawDirections(4);
@@ -239,75 +242,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    /*
-     * Sets bitmap markers to each building.
-     */
-    private void setMarkers() {
-        IconGenerator icon = new IconGenerator(this);
-
-        // SE
-        Bitmap iconBitmap = icon.makeIcon("SE1");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251029, -122.999057)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE2\nGreat Hall");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251337, -123.001294)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE4");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.251242, -123.000092)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE6");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.250836, -123.000462)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE8");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.250692, -123.001412)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE10");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249782, -123.000645)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE12");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249926, -123.001573)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE14\nLibrary");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.249379, -123.000811)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE16\nRecreation Center");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.248665, -123.000978)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE19");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.248882, -122.998591)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE30");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.246131, -122.998702)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE40");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243363, -122.998737)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE41");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243741, -122.999338)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE42");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.243275, -122.999536)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        iconBitmap = icon.makeIcon("SE50");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(49.242520, -122.998954)))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-    }
-
-    protected void generateDirections(Node start, Node to){
+    protected void generateDirections(Node start, Node to) {
 
         LinkedBlockingQueue<Node> path = findPath(start, to, false);
 
@@ -373,7 +308,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     }
 
     public void drawDirections(int floor) {
-        for(Polyline line : lines)  {
+        for (Polyline line : lines) {
             line.remove();
         }
         lines.clear();
@@ -388,7 +323,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             }
         }
         for (Marker mark : directionMarkers) {
-            if ((int)mark.getTag() == floor) {
+            if ((int) mark.getTag() == floor) {
                 mark.setVisible(true);
             } else {
                 mark.setVisible(false);
@@ -444,4 +379,12 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         return path;
     }
 
+
+    /*
+     * Sets bitmap markers to each building.
+     */
+    private void setMarkers() {
+        //TODO Why do you call setMarkers() in the if else statement above.
+        //If this is empty it works, if it's not it doesn't. WTF pls educate, Jacob!
+    }
 }
