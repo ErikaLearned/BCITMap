@@ -1,10 +1,12 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,8 +20,11 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
+
+import static java.security.AccessController.getContext;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -59,6 +64,17 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        try {
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+            if (!success) {
+                Log.e("MapsActivityRaw", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivityRaw", "Can't find style.", e);
+        }
+
         // Move camera to middle of BCIT Burnaby campus
         LatLng BCIT = new LatLng(49.250899, -123.001488);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(BCIT));
