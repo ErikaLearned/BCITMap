@@ -4,8 +4,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,11 +20,20 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
-public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
 
+public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
+                                                          GoogleMap.OnCameraMoveListener {
+    private String TAG = BCIT_Map.class.getName();
     private GoogleMap mMap;
-    int currentFloor;
+    private int currentFloor;
+    private ArrayList<Polygon> buildings;
+    private Polygon_Shapes shape;
+    private float zoom;
+    private float turnOffAtZoom = (float)17.5;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
@@ -52,6 +63,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnCameraMoveListener(this);
+
         // Move camera to middle of BCIT Burnaby campus
         LatLng BCIT = new LatLng(49.250899, -123.001488);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(BCIT));
@@ -59,6 +72,35 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback {
 
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
+
+        // Init polygon shapes over buildings
+        shape = new Polygon_Shapes();
+        buildings = new ArrayList<Polygon>();
+        initBuildingOverlays(shape.getBuildings(), buildings);
+        // TODO Make building overlays disappear when at a closer zoom level or when accessed by directions menu
+    }
+
+    @Override
+    public void onCameraMove() {
+        zoom = mMap.getCameraPosition().zoom;
+
+        if(zoom > turnOffAtZoom) {
+            shape.turnOffBuildings(buildings);
+        } else {
+            shape.turnOnBuildings(buildings);
+        }
+    }
+
+
+    /*
+     * Adds polygon options to the map.
+     */
+    private void initBuildingOverlays(ArrayList<PolygonOptions> list,
+                                      ArrayList<Polygon> buildings) {
+        for(int i = 0; i < list.size(); i++) {
+            Polygon poly = mMap.addPolygon(list.get(i));
+            buildings.add(poly);
+        }
     }
 
 
