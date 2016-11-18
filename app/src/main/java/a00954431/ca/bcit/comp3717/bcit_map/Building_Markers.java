@@ -55,6 +55,18 @@ public class Building_Markers {
         buildingNameMarkers.add(marker);
     }
 
+    public void turnOnMarkers(ArrayList<Marker> list) {
+        for (Marker mark: list) {
+            mark.setVisible(true);
+        }
+    }
+
+    public void turnOffMarkers(ArrayList<Marker> list) {
+        for (Marker mark: list) {
+            mark.setVisible(false);
+        }
+    }
+
     public ArrayList<Marker> getBuildingNameMarkers() {
         return buildingNameMarkers;
     }

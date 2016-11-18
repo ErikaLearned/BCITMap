@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -37,6 +38,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     private Polygon_Shapes shape;
     private float zoom;
     private float turnOffAtZoom = (float)17.5;
+    private ArrayList<Marker> buildingMarkers;
+    private Building_Markers markers;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
@@ -92,7 +95,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
         // Set labels on each building
-        Building_Markers markers = new Building_Markers(this, mMap);
+        markers = new Building_Markers(this, mMap);
+        buildingMarkers = markers.getBuildingNameMarkers();
 
         currentFloor = R.id.floor1;
         setFloor(findViewById(R.id.floor1));
@@ -110,8 +114,10 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
 
         if(zoom > turnOffAtZoom) {
             shape.turnOffBuildings(buildings);
+            markers.turnOffMarkers(buildingMarkers);
         } else {
             shape.turnOnBuildings(buildings);
+            markers.turnOnMarkers(buildingMarkers);
         }
     }
 
