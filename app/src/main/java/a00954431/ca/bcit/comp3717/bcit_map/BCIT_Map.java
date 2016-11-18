@@ -43,8 +43,6 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     private int currentFloor;
     private ArrayList<Polygon> buildings;
     private Polygon_Shapes shape;
-    private float zoom;
-    private float turnOffAtZoom = (float) 17.5;
     private ArrayList<Marker> buildingMarkers;
     private Building_Markers markers;
 
@@ -145,10 +143,17 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onCameraMove() {
+        float zoom;
+        float turnOffAtZoom = (float) 17.5;
+        float turnOffBuildingLabels = (float) 16.5;
+
         zoom = mMap.getCameraPosition().zoom;
 
         if (zoom > turnOffAtZoom) {
             shape.turnOffBuildings(buildings);
+            markers.turnOffMarkers(buildingMarkers);
+        }  else if (zoom < turnOffBuildingLabels) {
+            shape.turnOnBuildings(buildings);
             markers.turnOffMarkers(buildingMarkers);
         } else {
             shape.turnOnBuildings(buildings);
