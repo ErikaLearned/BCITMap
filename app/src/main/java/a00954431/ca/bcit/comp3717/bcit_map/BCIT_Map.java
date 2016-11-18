@@ -46,6 +46,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     private ArrayList<Marker> buildingMarkers;
     private Building_Markers markers;
 
+    float turnOffAtZoom = (float) 17.5;
+    float turnOffBuildingLabels = (float) 16.5;
+
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
     ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
@@ -127,8 +130,6 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 nTo = NodeDir.mapDB.getNodeByName(to[1]);
             }
             generateDirections(nFrom, nTo);
-        } else {
-            setMarkers();
         }
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -144,23 +145,29 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onCameraMove() {
         float zoom;
-        float turnOffAtZoom = (float) 17.5;
-        float turnOffBuildingLabels = (float) 16.5;
-
         zoom = mMap.getCameraPosition().zoom;
 
         if (zoom > turnOffAtZoom) {
             shape.turnOffBuildings(buildings);
             markers.turnOffMarkers(buildingMarkers);
+            setBuildingsOverlayVisible(true);
         }  else if (zoom < turnOffBuildingLabels) {
             shape.turnOnBuildings(buildings);
             markers.turnOffMarkers(buildingMarkers);
         } else {
             shape.turnOnBuildings(buildings);
             markers.turnOnMarkers(buildingMarkers);
+            setBuildingsOverlayVisible(false);
         }
     }
 
+    private void setBuildingsOverlayVisible(boolean show) {
+        for (GroundOverlay go : groundOverlaysSE) {
+            if (go != null) {
+                go.setVisible(show);
+            }
+        }
+    }
 
     /*
      * Adds polygon options to the map.
@@ -241,9 +248,14 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 break;
             }
             default: {
-                // Nothing
+                drawDirections(0);
                 break;
             }
+        }
+        if (mMap.getCameraPosition().zoom > turnOffAtZoom) {
+            setBuildingsOverlayVisible(true);
+        } else {
+            setBuildingsOverlayVisible(false);
         }
     }
 
@@ -384,12 +396,4 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         return path;
     }
 
-
-    /*
-     * Sets bitmap markers to each building.
-     */
-    private void setMarkers() {
-        //TODO Why do you call setMarkers() in the if else statement above.
-        //If this is empty it works, if it's not it doesn't. WTF pls educate, Jacob!
-    }
 }
