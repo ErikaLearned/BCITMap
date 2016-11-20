@@ -15,53 +15,21 @@ tools:context=".BCIT_Map" >
         map:mapType="normal"
         map:cameraZoom="17">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/floor1"
-        android:layout_gravity="right|top"
-        android:text="1"
-        android:tag="1"
-        android:padding="5dp"
-        android:onClick="setFloor"
-        android:layout_marginTop="0dp"
-        android:paddingRight="5dp" />
 
-        <Button
+        <Spinner
+            android:id="@+id/floor_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/floor2"
             android:layout_gravity="right|top"
-            android:text="2"
-            android:tag="2"
-            android:padding="5dp"
-            android:onClick="setFloor"
-            android:layout_marginTop="40dp"
-            android:paddingRight="5dp"/>
+            android:padding="12dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:textSize="32sp"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            android:spinnerMode="dialog"
+            android:layout_marginTop="0dp" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/floor3"
-            android:layout_gravity="right|top"
-            android:text="3"
-            android:tag="3"
-            android:padding="5dp"
-            android:onClick="setFloor"
-            android:layout_marginTop="80dp"
-            android:paddingRight="5dp"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/floor4"
-            android:layout_gravity="right|top"
-            android:text="4"
-            android:tag="4"
-            android:padding="5dp"
-            android:onClick="setFloor"
-            android:layout_marginTop="120dp"
-            android:paddingRight="5dp"/>
 
 </fragment>
 
