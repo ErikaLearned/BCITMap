@@ -34,6 +34,20 @@ public class Building_Floorplan {
                        new LatLng(49.250505, -123.001316),
                        R.drawable.se12f4m,
                        "se12f4m");
+
+        // SE14 (library) - floors 1 - 3
+        buildFloorplan(new LatLng(49.249171, -123.001416),
+                       new LatLng(49.249684, -123.000137),
+                       R.drawable.se14f1m,
+                       "se14f1m");
+        buildFloorplan(new LatLng(49.249171, -123.001416),
+                       new LatLng(49.249684, -123.000137),
+                       R.drawable.se14f2m,
+                       "se14f2m");
+        buildFloorplan(new LatLng(49.249171, -123.001416),
+                       new LatLng(49.249684, -123.000137),
+                       R.drawable.se14f3m,
+                       "se14f3m");
     }
 
     /*
