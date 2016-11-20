@@ -326,7 +326,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             paths.get(pathNum).add(node);
         }
         directionMarkers.remove(0);
-        setFloor(start.floor);
+        Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
+        spinner.setSelection(start.floor-1);
 
         // Zoom on start position
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
