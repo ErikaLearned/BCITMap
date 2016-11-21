@@ -18,19 +18,19 @@ public class Building_Floorplan {
         plans = new TreeMap<String, GroundOverlayOptions>();
 
         // SE12 - floors 1 to 4
-        buildFloorplan(new LatLng(49.249360, -123.002164),
+        buildFloorplan(new LatLng(49.249457, -123.002164),
                        new LatLng(49.250539, -123.001253),
                        R.drawable.se12f1m,
                        "se12f1m");
-        buildFloorplan(new LatLng(49.249360, -123.002164),
+        buildFloorplan(new LatLng(49.249457, -123.002164),
                        new LatLng(49.250528, -123.001075),
                        R.drawable.se12f2m,
                        "se12f2m");
-        buildFloorplan(new LatLng(49.249377, -123.001834),
+        buildFloorplan(new LatLng(49.249457, -123.001834),
                        new LatLng(49.250505, -123.001316),
                        R.drawable.se12f3m,
                        "se12f3m");
-        buildFloorplan(new LatLng(49.249377, -123.001834),
+        buildFloorplan(new LatLng(49.249457, -123.001834),
                        new LatLng(49.250505, -123.001316),
                        R.drawable.se12f4m,
                        "se12f4m");
