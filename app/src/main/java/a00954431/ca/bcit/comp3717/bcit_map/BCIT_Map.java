@@ -1,6 +1,8 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -287,57 +289,71 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     protected void generateDirections(Node start, Node to) {
 
         LinkedBlockingQueue<Node> path = findPath(start, to, false);
+        if (path != null) {
+            IconGenerator icon = new IconGenerator(this);
 
-        IconGenerator icon = new IconGenerator(this);
+            // Set markers
+            Bitmap iconBitmap = icon.makeIcon("CURRENT");
+            mMap.addMarker(new MarkerOptions().position(start.loc))
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
 
-        // Set markers
-        Bitmap iconBitmap = icon.makeIcon("CURRENT");
-        mMap.addMarker(new MarkerOptions().position(start.loc))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        String iconTag;
-        if (!to.roomNum.equals("") && !to.building.equals("")) {
-            iconTag = to.building + "-" + to.roomNum;
-        } else {
-            iconTag = to.roomName;
-        }
-        iconBitmap = icon.makeIcon(iconTag);
-        mMap.addMarker(new MarkerOptions().position(to.loc))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        // Add direction markers and lines to arrays
-        paths.clear();
-        directionMarkers.clear();
-        int floor = 0;
-        int pathNum = -1;
-        for (Node node : path) {
-            if (node.floor != floor) {
-
-                paths.add(new ArrayList<Node>());
-
-                if (node.floor > floor) {
-                    iconBitmap = icon.makeIcon("Down to floor " + floor);
-                } else {
-                    iconBitmap = icon.makeIcon("Up to floor " + floor);
-                }
-
-                Marker mark = mMap.addMarker(new MarkerOptions().position(node.loc));
-                mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-                mark.setVisible(false);
-                mark.setTag(node.floor);
-                directionMarkers.add(mark);
-                floor = node.floor;
-                pathNum++;
+            String iconTag;
+            if (!to.roomNum.equals("") && !to.building.equals("")) {
+                iconTag = to.building + "-" + to.roomNum;
+            } else {
+                iconTag = to.roomName;
             }
-            paths.get(pathNum).add(node);
+            iconBitmap = icon.makeIcon(iconTag);
+            mMap.addMarker(new MarkerOptions().position(to.loc))
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+            // Add direction markers and lines to arrays
+            paths.clear();
+            directionMarkers.clear();
+            int floor = 0;
+            int pathNum = -1;
+            for (Node node : path) {
+                if (node.floor != floor) {
+
+                    paths.add(new ArrayList<Node>());
+
+                    if (node.floor > floor) {
+                        iconBitmap = icon.makeIcon("Down to floor " + floor);
+                    } else {
+                        iconBitmap = icon.makeIcon("Up to floor " + floor);
+                    }
+
+                    Marker mark = mMap.addMarker(new MarkerOptions().position(node.loc));
+                    mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+                    mark.setVisible(false);
+                    mark.setTag(node.floor);
+                    directionMarkers.add(mark);
+                    floor = node.floor;
+                    pathNum++;
+                }
+                paths.get(pathNum).add(node);
+            }
+            directionMarkers.remove(0);
+            Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
+            spinner.setSelection(start.floor-1);
+
+            // Zoom on start position
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
+        } else {
+            // If failed to find path
+            paths.clear();
+            directionMarkers.clear();
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Direction Error");
+            alertDialog.setMessage("We could not find a path to your destination.");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
         }
-        directionMarkers.remove(0);
-        Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
-        spinner.setSelection(start.floor-1);
-
-        // Zoom on start position
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
-
     }
 
     /*
@@ -375,7 +391,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     }
 
     /*
-     *  Gets unit path by A* path finding.
+     *  Gets path by A* path finding.
      */
     public LinkedBlockingQueue<Node> findPath(Node start, Node end, boolean noOutside) {
         Comparator<Node> comparator = new NodeLengthComparator();
@@ -408,6 +424,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                     }
                 }
             }
+        }
+        if (frontier.isEmpty()) {
+            return null; // Failed to find a path
         }
         // Converts path to deque for use
         Node current = frontier.peek();
