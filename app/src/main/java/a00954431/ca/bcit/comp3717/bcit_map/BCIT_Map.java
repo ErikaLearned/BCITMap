@@ -1,5 +1,6 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -8,7 +9,12 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,10 +44,9 @@ import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
-                                                          GoogleMap.OnCameraMoveListener {
+                                                          GoogleMap.OnCameraMoveListener{
     private String TAG = BCIT_Map.class.getName();
     private GoogleMap mMap;
-    private int currentFloor;
     private ArrayList<Polygon> buildings;
     private Polygon_Shapes shape;
     private ArrayList<Marker> buildingMarkers;
@@ -72,6 +77,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
 
@@ -106,9 +112,6 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         // Constrain the camera target to the BCIT Burnaby campus
         mMap.setLatLngBoundsForCameraTarget(burnabyCampus);
 
-
-
-
         // Init polygon shapes over buildings
         shape = new Polygon_Shapes();
         buildings = new ArrayList<Polygon>();
@@ -123,9 +126,23 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         floorplans = building_floorplan.getFloorPlans();
         boolean contains = floorplans.containsKey("se12f4m");
 
-        currentFloor = R.id.floor1;
-        setFloor(findViewById(R.id.floor1));
+        // Setup floor spinner
+        Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.bcit_floors, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
+                setFloor(position+1);
+            }
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // Do Nothing
+            }
+        });
 
+        // Get from and to nodes if they exists
         paths.clear();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -171,6 +188,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    /*
+     * Sets all building overlays to be visible or hidden
+     */
     private void setBuildingsOverlayVisible(boolean show) {
         for (GroundOverlay go : groundOverlaysSE) {
             if (go != null) {
@@ -190,20 +210,20 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    public void setFloor(View v) {
+
+    /*
+     * Sets the floor to view, removes floor plans and draws new ones for floor
+     * Redraw direction paths if any
+     */
+    public void setFloor(int floorNum) {
         GroundOverlayOptions plan;
-        int floorNum = v.getId();
-        Button fc = (Button) findViewById(currentFloor);
-        fc.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
-        v.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
-        currentFloor = floorNum;
         for (GroundOverlay go : groundOverlaysSE) {
             if (go != null) {
                 go.remove();
             }
         }
-        switch (currentFloor) {
-            case R.id.floor1: {
+        switch (floorNum) {
+            case 1: {
                 plan = floorplans.get("se12f1m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
@@ -211,7 +231,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 }
                 break;
             }
-            case R.id.floor2: {
+            case 2: {
                 plan = floorplans.get("se12f2m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
@@ -219,7 +239,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 }
                 break;
             }
-            case R.id.floor3: {
+            case 3: {
                 plan = floorplans.get("se12f3m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
@@ -227,12 +247,19 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 }
                 break;
             }
-            case R.id.floor4: {
+            case 4: {
                 plan = floorplans.get("se12f4m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
 
                 if (!paths.isEmpty()) {
                     drawDirections(4);
+                }
+                break;
+            }
+            case 5: {
+
+                if (!paths.isEmpty()) {
+                    drawDirections(5);
                 }
                 break;
             }
@@ -248,12 +275,16 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    /*
+    *   Generates the directions for the given nodes
+    */
     protected void generateDirections(Node start, Node to) {
 
         LinkedBlockingQueue<Node> path = findPath(start, to, false);
 
         IconGenerator icon = new IconGenerator(this);
 
+        // Set markers
         Bitmap iconBitmap = icon.makeIcon("CURRENT");
         mMap.addMarker(new MarkerOptions().position(start.loc))
                 .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
@@ -268,6 +299,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         mMap.addMarker(new MarkerOptions().position(to.loc))
                 .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
 
+        // Add direction markers and lines to arrays
         paths.clear();
         directionMarkers.clear();
         int floor = 0;
@@ -294,25 +326,17 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             paths.get(pathNum).add(node);
         }
         directionMarkers.remove(0);
-        switch (start.floor) {
-            case 1:
-                setFloor(findViewById(R.id.floor1));
-                break;
-            case 2:
-                setFloor(findViewById(R.id.floor2));
-                break;
-            case 3:
-                setFloor(findViewById(R.id.floor3));
-                break;
-            case 4:
-                setFloor(findViewById(R.id.floor4));
-                break;
-        }
+        Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
+        spinner.setSelection(start.floor-1);
 
+        // Zoom on start position
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
 
     }
 
+    /*
+    *   Draws directions for floor
+    */
     public void drawDirections(int floor) {
         for (Polyline line : lines) {
             line.remove();
@@ -337,12 +361,16 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    // Comparision method for A* path finding.
+    /*
+     * Comparision method for A* path finding.
+     */
     float heuristic(Node a, Node b) {
         return a.getDistanceTo(b);
     }
 
-    // Gets unit path by A* path finding.
+    /*
+     *  Gets unit path by A* path finding.
+     */
     public LinkedBlockingQueue<Node> findPath(Node start, Node end, boolean noOutside) {
         Comparator<Node> comparator = new NodeLengthComparator();
         LinkedBlockingQueue<Node> path = new LinkedBlockingQueue<Node>();
@@ -353,6 +381,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         HashMap<Node, Integer> cost = new HashMap<Node, Integer>();
         cameFrom.put(start, null);
         cost.put(start, 0);
+        // Loop until exhausted nodes to check, or found end node
         while (!frontier.isEmpty()) {
             Node current = frontier.peek();
             //Log.d("X", current.key.toString());

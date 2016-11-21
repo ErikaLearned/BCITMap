@@ -37,6 +37,9 @@ public class Node {
         neighbours = nei;
     }
 
+    /*
+    *   Gets distance between nodes based on LatLng positions
+    */
     public float getDistanceTo(Node des) {
         float distance=0;
         Location crntLocation=new Location("crntlocation");
