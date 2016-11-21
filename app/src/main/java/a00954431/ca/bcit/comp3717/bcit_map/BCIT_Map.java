@@ -3,12 +3,15 @@ package a00954431.ca.bcit.comp3717.bcit_map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,6 +47,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                                                           GoogleMap.OnCameraMoveListener{
@@ -161,6 +166,18 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             generateDirections(nFrom, nTo);
         }
 
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            Log.d(TAG, "askPermission()");
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION },
+                    1
+            );
+        }
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -169,6 +186,23 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             }
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    mMap.setMyLocationEnabled(true);
+                } else {
+                    Toast.makeText(this, "Permission denied cant get your location!", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 
     @Override
