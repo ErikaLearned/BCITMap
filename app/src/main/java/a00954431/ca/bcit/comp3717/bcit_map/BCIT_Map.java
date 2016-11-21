@@ -1,12 +1,17 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -42,6 +47,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                                                           GoogleMap.OnCameraMoveListener{
@@ -159,6 +166,18 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             generateDirections(nFrom, nTo);
         }
 
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            Log.d(TAG, "askPermission()");
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION },
+                    1
+            );
+        }
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -167,6 +186,23 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             }
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    mMap.setMyLocationEnabled(true);
+                } else {
+                    Toast.makeText(this, "Permission denied cant get your location!", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 
     @Override
@@ -287,57 +323,71 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     protected void generateDirections(Node start, Node to) {
 
         LinkedBlockingQueue<Node> path = findPath(start, to, false);
+        if (path != null) {
+            IconGenerator icon = new IconGenerator(this);
 
-        IconGenerator icon = new IconGenerator(this);
+            // Set markers
+            Bitmap iconBitmap = icon.makeIcon("CURRENT");
+            mMap.addMarker(new MarkerOptions().position(start.loc))
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
 
-        // Set markers
-        Bitmap iconBitmap = icon.makeIcon("CURRENT");
-        mMap.addMarker(new MarkerOptions().position(start.loc))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        String iconTag;
-        if (!to.roomNum.equals("") && !to.building.equals("")) {
-            iconTag = to.building + "-" + to.roomNum;
-        } else {
-            iconTag = to.roomName;
-        }
-        iconBitmap = icon.makeIcon(iconTag);
-        mMap.addMarker(new MarkerOptions().position(to.loc))
-                .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-
-        // Add direction markers and lines to arrays
-        paths.clear();
-        directionMarkers.clear();
-        int floor = 0;
-        int pathNum = -1;
-        for (Node node : path) {
-            if (node.floor != floor) {
-
-                paths.add(new ArrayList<Node>());
-
-                if (node.floor > floor) {
-                    iconBitmap = icon.makeIcon("Down to floor " + floor);
-                } else {
-                    iconBitmap = icon.makeIcon("Up to floor " + floor);
-                }
-
-                Marker mark = mMap.addMarker(new MarkerOptions().position(node.loc));
-                mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-                mark.setVisible(false);
-                mark.setTag(node.floor);
-                directionMarkers.add(mark);
-                floor = node.floor;
-                pathNum++;
+            String iconTag;
+            if (!to.roomNum.equals("") && !to.building.equals("")) {
+                iconTag = to.building + "-" + to.roomNum;
+            } else {
+                iconTag = to.roomName;
             }
-            paths.get(pathNum).add(node);
+            iconBitmap = icon.makeIcon(iconTag);
+            mMap.addMarker(new MarkerOptions().position(to.loc))
+                    .setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+
+            // Add direction markers and lines to arrays
+            paths.clear();
+            directionMarkers.clear();
+            int floor = 0;
+            int pathNum = -1;
+            for (Node node : path) {
+                if (node.floor != floor) {
+
+                    paths.add(new ArrayList<Node>());
+
+                    if (node.floor > floor) {
+                        iconBitmap = icon.makeIcon("Down to floor " + floor);
+                    } else {
+                        iconBitmap = icon.makeIcon("Up to floor " + floor);
+                    }
+
+                    Marker mark = mMap.addMarker(new MarkerOptions().position(node.loc));
+                    mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+                    mark.setVisible(false);
+                    mark.setTag(node.floor);
+                    directionMarkers.add(mark);
+                    floor = node.floor;
+                    pathNum++;
+                }
+                paths.get(pathNum).add(node);
+            }
+            directionMarkers.remove(0);
+            Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
+            spinner.setSelection(start.floor-1);
+
+            // Zoom on start position
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
+        } else {
+            // If failed to find path
+            paths.clear();
+            directionMarkers.clear();
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Direction Error");
+            alertDialog.setMessage("We could not find a path to your destination.");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
         }
-        directionMarkers.remove(0);
-        Spinner spinner = (Spinner) findViewById(R.id.floor_spinner);
-        spinner.setSelection(start.floor-1);
-
-        // Zoom on start position
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(start.loc, 18.0f));
-
     }
 
     /*
@@ -375,7 +425,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     }
 
     /*
-     *  Gets unit path by A* path finding.
+     *  Gets path by A* path finding.
      */
     public LinkedBlockingQueue<Node> findPath(Node start, Node end, boolean noOutside) {
         Comparator<Node> comparator = new NodeLengthComparator();
@@ -408,6 +458,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                     }
                 }
             }
+        }
+        if (frontier.isEmpty()) {
+            return null; // Failed to find a path
         }
         // Converts path to deque for use
         Node current = frontier.peek();
