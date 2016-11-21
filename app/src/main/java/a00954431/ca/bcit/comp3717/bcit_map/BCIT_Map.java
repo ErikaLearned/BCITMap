@@ -226,6 +226,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             case 1: {
                 plan = floorplans.get("se12f1m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
+                plan = floorplans.get("se14f1m");
+                groundOverlaysSE[8] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
                     drawDirections(1);
                 }
@@ -234,6 +236,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             case 2: {
                 plan = floorplans.get("se12f2m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
+                plan = floorplans.get("se14f2m");
+                groundOverlaysSE[8] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
                     drawDirections(2);
                 }
@@ -242,6 +246,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             case 3: {
                 plan = floorplans.get("se12f3m");
                 groundOverlaysSE[7] = mMap.addGroundOverlay(plan);
+                plan = floorplans.get("se14f3m");
+                groundOverlaysSE[8] = mMap.addGroundOverlay(plan);
                 if (!paths.isEmpty()) {
                     drawDirections(3);
                 }
