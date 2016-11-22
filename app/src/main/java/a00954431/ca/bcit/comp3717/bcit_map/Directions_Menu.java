@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -43,15 +44,21 @@ public class Directions_Menu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_directions_menu);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final Button dirButt = (Button) findViewById(R.id.getDirections);
         dirButt.setEnabled(false);
-
         final CheckBox outdoor = (CheckBox) findViewById(R.id.checkBoxOutdoors);
+        final CheckBox locationcheck = (CheckBox) findViewById(R.id.checkboxlocation);
+        final EditText fromText = (EditText)findViewById(R.id.fromSearch);
+        final EditText toText = (EditText)findViewById(R.id.toSearch);
+        final LinearLayout searchlayout = (LinearLayout)findViewById(R.id.searchlayout);
+        ListView listViewSearch = (ListView)findViewById(R.id.listViewSearch);
+
+        locationcheck.setVisibility(View.GONE);
+        searchlayout.setVisibility(View.GONE);
 
         ArrayList<Node> dbList = NodeDir.mapDB.getAllNodes();
 
@@ -62,37 +69,38 @@ public class Directions_Menu extends AppCompatActivity {
                 roomList.add(node.building + "-" + node.roomName);
             }
         }
-/*
-        ListView listViewFrom = (ListView)findViewById(R.id.listViewFrom);
-        ListView listViewTo = (ListView)findViewById(R.id.listViewTo);
 
-        listViewFrom.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roomList));
-        listViewTo.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roomList));
+        listViewSearch.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roomList));
 
-
-        listViewFrom.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EditText fromText = (EditText)findViewById(R.id.fromSearch);
-                fromText.setText((String)parent.getItemAtPosition(position));
+                View v = getCurrentFocus();
+                if (v.equals(findViewById(R.id.fromSearch))) {
+                    fromText.setText((String)parent.getItemAtPosition(position));
+                    fromText.clearFocus();
+                } else if (v.equals(findViewById(R.id.toSearch))) {
+                    toText.setText((String)parent.getItemAtPosition(position));
+                    toText.clearFocus();
+                }
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         });
 
-        listViewTo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EditText toText = (EditText)findViewById(R.id.toSearch);
-                toText.setText((String)parent.getItemAtPosition(position));
-            }
-        }); */
+        locationcheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-        final EditText fromText = (EditText)findViewById(R.id.fromSearch);
-        final EditText toText = (EditText)findViewById(R.id.toSearch);
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                // TODO
+                Toast.makeText(Directions_Menu.this, "BOX = " + isChecked, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         fromText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-          /*      ListView mListView1 = (ListView)findViewById(R.id.listViewFrom);
+                ListView mListView1 = (ListView)findViewById(R.id.listViewSearch);
                 EditText fromText = (EditText)findViewById(R.id.fromSearch);
                 String search = fromText.getText().toString().toLowerCase();
                 if(!search.equals("") ) {
@@ -108,7 +116,7 @@ public class Directions_Menu extends AppCompatActivity {
                     roomList_FilteredFrom.clear();
                     mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
                 }
-                setStartButton(); */
+                setStartButton();
             }
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -116,7 +124,7 @@ public class Directions_Menu extends AppCompatActivity {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                // DO Nothing
+                // Do Nothing
             }
 
         });
@@ -128,6 +136,11 @@ public class Directions_Menu extends AppCompatActivity {
                     toText.setVisibility(View.GONE);
                     dirButt.setVisibility(View.GONE);
                     outdoor.setVisibility(View.GONE);
+                    searchlayout.setVisibility(View.VISIBLE);
+                    locationcheck.setVisibility(View.VISIBLE);
+                    ListView mListView1 = (ListView)findViewById(R.id.listViewSearch);
+                    roomList_FilteredFrom.clear();
+                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
 
                     int dpValue = 5; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -142,6 +155,8 @@ public class Directions_Menu extends AppCompatActivity {
                     toText.setVisibility(View.VISIBLE);
                     dirButt.setVisibility(View.VISIBLE);
                     outdoor.setVisibility(View.VISIBLE);
+                    searchlayout.setVisibility(View.GONE);
+                    locationcheck.setVisibility(View.GONE);
 
                     int dpValue = 76; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -161,11 +176,10 @@ public class Directions_Menu extends AppCompatActivity {
                 if(actionId== EditorInfo.IME_ACTION_DONE){
                     //Clear focus here from edittext
                     fromText.clearFocus();
-                  //  fromText= this.getCurrentFocus();
-                    if (fromText != null) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(fromText.getWindowToken(), 0);
-                    }
+
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(fromText.getWindowToken(), 0);
+                    return true;
                 }
                 return false;
             }
@@ -174,7 +188,7 @@ public class Directions_Menu extends AppCompatActivity {
         toText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-            /*    ListView mListView1 = (ListView)findViewById(R.id.listViewTo);
+               ListView mListView1 = (ListView)findViewById(R.id.listViewSearch);
                 EditText fromText = (EditText)findViewById(R.id.toSearch);
                 String search = fromText.getText().toString().toLowerCase();
                 if(!search.equals("") ) {
@@ -189,7 +203,7 @@ public class Directions_Menu extends AppCompatActivity {
                     roomList_FilteredTo.clear();
                     mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
                 }
-                setStartButton(); */
+                setStartButton();
             }
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -208,6 +222,10 @@ public class Directions_Menu extends AppCompatActivity {
                     fromText.setVisibility(View.GONE);
                     dirButt.setVisibility(View.GONE);
                     outdoor.setVisibility(View.GONE);
+                    searchlayout.setVisibility(View.VISIBLE);
+                    ListView mListView1 = (ListView)findViewById(R.id.listViewSearch);
+                    roomList_FilteredTo.clear();
+                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
 
                     int dpValue = 5; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -222,6 +240,7 @@ public class Directions_Menu extends AppCompatActivity {
                     fromText.setVisibility(View.VISIBLE);
                     dirButt.setVisibility(View.VISIBLE);
                     outdoor.setVisibility(View.VISIBLE);
+                    searchlayout.setVisibility(View.GONE);
 
                     int dpValue = 146; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -239,13 +258,10 @@ public class Directions_Menu extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId== EditorInfo.IME_ACTION_DONE){
-                    //Clear focus here from edittext
                     toText.clearFocus();
-                    //  fromText= this.getCurrentFocus();
-                    if (toText != null) {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(toText.getWindowToken(), 0);
-                    }
+                    return  true;
                 }
                 return false;
             }
@@ -255,7 +271,7 @@ public class Directions_Menu extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item){
         View v = getCurrentFocus();
-        if (v.equals(findViewById(R.id.fromSearch)) || v.equals(findViewById(R.id.toSearch))) {
+        if (v != null && (v.equals(findViewById(R.id.fromSearch)) || v.equals(findViewById(R.id.toSearch)))) {
             v.clearFocus();
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -266,7 +282,6 @@ public class Directions_Menu extends AppCompatActivity {
             finish();
             return  true;
         }
-      //  return true;
     }
 
     protected  void setStartButton() {
@@ -310,9 +325,11 @@ public class Directions_Menu extends AppCompatActivity {
                     });
             alertDialog.show();
         } else {
+            CheckBox outdoor = (CheckBox) findViewById(R.id.checkBoxOutdoors);
             Intent intent = new Intent(this, BCIT_Map.class);
             intent.putExtra("fromLocation", searchFrom);
             intent.putExtra("toLocation", searchTo);
+            intent.putExtra("outdoors", outdoor.isChecked());
             startActivity(intent);
         }
     }
