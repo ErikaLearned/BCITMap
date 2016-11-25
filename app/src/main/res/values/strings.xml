@@ -9,5 +9,15 @@
         <item>Floor 4</item>
         <item>Floor 5</item>
     </string-array>
+    <string-array name="detect_areas">
+        <item>Select Floor</item>
+        <item>Floor 1</item>
+        <item>Floor 2</item>
+        <item>Floor 3</item>
+        <item>Floor 4</item>
+        <item>Floor 5</item>
+        <item>Outside</item>
+        <item>Auto-Detect (inaccurate)</item>
+    </string-array>
 </resources>
 
