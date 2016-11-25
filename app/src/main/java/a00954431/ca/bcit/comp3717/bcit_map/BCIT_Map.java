@@ -2,12 +2,17 @@ package a00954431.ca.bcit.comp3717.bcit_map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -63,6 +68,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
 
     float turnOffAtZoom = (float) 17.5;
     float turnOffBuildingLabels = (float) 16.5;
+    float maxZoom = 14.0f;
 
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
@@ -71,9 +77,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     ArrayList<Marker> directionMarkers = new ArrayList<Marker>();
 
     // Create a LatLngBounds that includes the BCIT Burnaby campus.
-    // TODO update burnabyCampus boundaries to better encompass the campus.
     private LatLngBounds burnabyCampus = new LatLngBounds(
-            new LatLng(49.2432, -123.006932), new LatLng(49.253, -122.99998));
+            new LatLng(49.2432, -123.006932), new LatLng(49.257324, -122.992615));
 
 
     @Override
@@ -99,6 +104,21 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null || ni.getType() != ConnectivityManager.TYPE_WIFI) {
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Cant get maps");
+            alertDialog.setMessage("Cannot load campus map without internet connection");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
 
         try {
             boolean success = mMap.setMapStyle(
@@ -153,17 +173,12 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         paths.clear();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String[] from = extras.getString("fromLocation").split("-");
-            String[] to = extras.getString("toLocation").split("-");
-            Node nFrom = NodeDir.mapDB.getNodeByRoom(from[0], from[1]);
-            if (nFrom == null) {
-                nFrom = NodeDir.mapDB.getNodeByName(from[1]);
-            }
-            Node nTo = NodeDir.mapDB.getNodeByRoom(to[0], to[1]);
-            if (nTo == null) {
-                nTo = NodeDir.mapDB.getNodeByName(to[1]);
-            }
-            generateDirections(nFrom, nTo);
+            Integer from = extras.getInt("fromLocation");
+            Integer to = extras.getInt("toLocation");
+            boolean outdoors = extras.getBoolean("outdoors");
+            Node nFrom = NodeDir.mapDB.getNodeByKey(from);
+            Node nTo = NodeDir.mapDB.getNodeByKey(to);
+            generateDirections(nFrom, nTo, outdoors);
         }
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -209,6 +224,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     public void onCameraMove() {
         float zoom;
         zoom = mMap.getCameraPosition().zoom;
+
+        if (zoom < maxZoom)
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(maxZoom));
 
         if (zoom > turnOffAtZoom) {
             shape.turnOffBuildings(buildings);
@@ -320,9 +338,9 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     /*
     *   Generates the directions for the given nodes
     */
-    protected void generateDirections(Node start, Node to) {
+    protected void generateDirections(Node start, Node to, boolean outside) {
 
-        LinkedBlockingQueue<Node> path = findPath(start, to, false);
+        LinkedBlockingQueue<Node> path = findPath(start, to, outside);
         if (path != null) {
             IconGenerator icon = new IconGenerator(this);
 

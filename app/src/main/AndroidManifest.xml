@@ -41,7 +41,9 @@
         <activity
             android:name=".Directions_Menu"
             android:windowSoftInputMode="adjustNothing"
-            android:label="Get Directions"/>
+            android:label="Get Directions"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"/>
     </application>
 
 </manifest>

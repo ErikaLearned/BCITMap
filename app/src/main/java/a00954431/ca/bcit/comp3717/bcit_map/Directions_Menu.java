@@ -56,16 +56,17 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    ArrayList<String> roomList = new ArrayList<String>();
-    ArrayList<String> roomList_FilteredTo = new ArrayList<String>();
-    ArrayList<String> roomList_FilteredFrom = new ArrayList<String>();
+    ArrayList<Node> roomList = new ArrayList<Node>();
+    ArrayList<Node> roomList_Filtered = new ArrayList<Node>();
     ArrayList<Node> dbList;
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-
     private LatLng currentLocation;
+
+    private Integer startKey = null;
+    private Integer endKey = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,33 +97,40 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
         final EditText fromText = (EditText)findViewById(R.id.fromSearch);
         final EditText toText = (EditText)findViewById(R.id.toSearch);
         final LinearLayout searchlayout = (LinearLayout)findViewById(R.id.searchlayout);
-        ListView listViewSearch = (ListView)findViewById(R.id.listViewSearch);
+        final ListView listViewSearch = (ListView)findViewById(R.id.listViewSearch);
 
-        locationcheck.setVisibility(View.GONE);
+
         searchlayout.setVisibility(View.GONE);
         areaSpinner.setVisibility(View.GONE);
 
         dbList = NodeDir.mapDB.getAllNodes();
 
-        for(Node node : dbList) {
-            if (!node.roomNum.equals("")) {
-                roomList.add(node.building + "-" + node.roomNum);
-            } else if (!node.roomName.equals("")) {
-                roomList.add(node.building + "-" + node.roomName);
+        for (Node node : dbList) {
+            if (!node.roomNum.equals("") || !node.roomName.equals("")) {
+              roomList.add(node);
             }
         }
 
-        listViewSearch.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roomList));
+        listViewSearch.setAdapter(new ArrayAdapter<Node>(this, android.R.layout.simple_list_item_1, roomList));
 
         listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Node n = (Node)parent.getItemAtPosition(position);
+                String item = n.toString();
                 View v = getCurrentFocus();
+                if (v == null) {
+                    listViewSearch.setSelection(0);
+                    Toast.makeText(Directions_Menu.this, "Focus Error", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (v.equals(findViewById(R.id.fromSearch))) {
-                    fromText.setText((String)parent.getItemAtPosition(position));
+                    startKey = n.key;
+                    fromText.setText(item);
                     fromText.clearFocus();
                 } else if (v.equals(findViewById(R.id.toSearch))) {
-                    toText.setText((String)parent.getItemAtPosition(position));
+                    endKey = n.key;
+                    toText.setText(item);
                     toText.clearFocus();
                 }
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -136,10 +144,17 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
                 if (isChecked) {
+                    fromText.setEnabled(false);
+                    fromText.setText("");
+                    fromText.setHint("Set floor");
+                    areaSpinner.setSelection(0);
                    runLocation();
                     areaSpinner.setVisibility(View.VISIBLE);
                 } else {
                     areaSpinner.setVisibility(View.GONE);
+                    fromText.setEnabled(true);
+                    fromText.setText("");
+                    fromText.setHint("From");
                 }
             }
         });
@@ -153,10 +168,17 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                 if (position > 0) {
                     Node bestNode = null;
                     double bestSum = Double.POSITIVE_INFINITY;
+                    runLocation();
                     LatLng local = currentLocation;
 
+                    if (local == null) {
+                        fromText.setText("");
+                        fromText.setHint("Can't get location");
+                        areaSpinner.setSelection(0);
+                        return;
+                    }
                     for(Node node : dbList) {
-                        if (node.floor < 6) {
+                        if (position < 6) {
                             if (node.floor != position) {
                                 continue;
                             }
@@ -169,35 +191,16 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                             bestNode = node;
                         }
                     }
-
-                    // TODO
-
                     if (bestNode == null) {
-                        return;
-                    }
-
-                    String best = "";
-
-                    if (!bestNode.roomNum.equals("")) {
-                        best = bestNode.building + "-" + bestNode.roomNum;
-                    } else if (!bestNode.roomName.equals("")) {
-                        best = bestNode.building + "-" + bestNode.roomName;
+                        fromText.setText("");
+                        fromText.setHint("Can't get location");
                     } else {
-                        best = bestNode.building + "-" + bestNode.key;
+                        Log.d("X", bestNode.toString());
+                        fromText.setHint("From");
+                        fromText.setText("Your location");
+                        startKey = bestNode.key;
+                        setStartButton();
                     }
-
-                    View v = getCurrentFocus();
-                    if (v.equals(findViewById(R.id.fromSearch))) {
-                        fromText.setText(best);
-                        fromText.clearFocus();
-                    } else if (v.equals(findViewById(R.id.toSearch))) {
-                        toText.setText(best);
-                        toText.clearFocus();
-                    }
-                    areaSpinner.setVisibility(View.GONE);
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    setStartButton();
                 }
             }
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -212,17 +215,18 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                 EditText fromText = (EditText)findViewById(R.id.fromSearch);
                 String search = fromText.getText().toString().toLowerCase();
                 if(!search.equals("") ) {
-                    roomList_FilteredFrom.clear();
-                    for(String room : roomList) {
-                        if(room.toLowerCase().contains(search)) {
-                            roomList_FilteredFrom.add(room);
+                   roomList_Filtered.clear();
+                    for(Node room : roomList) {
+                        if(room.toString().toLowerCase().contains(search)) {
+                            roomList_Filtered.add(room);
                         }
                     }
-                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList_FilteredFrom));
+                   mListView1.setAdapter(new ArrayAdapter<Node>(getBaseContext(), android.R.layout.simple_list_item_1, roomList_Filtered));
 
                 } else {
-                    roomList_FilteredFrom.clear();
-                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
+                    startKey = null;
+                    roomList_Filtered.clear();
+                    mListView1.setAdapter(new ArrayAdapter<Node>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
                 }
                 setStartButton();
             }
@@ -244,11 +248,12 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                     toText.setVisibility(View.GONE);
                     dirButt.setVisibility(View.GONE);
                     outdoor.setVisibility(View.GONE);
+                    locationcheck.setVisibility(View.GONE);
+                    areaSpinner.setVisibility(View.GONE);
                     searchlayout.setVisibility(View.VISIBLE);
-                    locationcheck.setVisibility(View.VISIBLE);
                     ListView mListView1 = (ListView)findViewById(R.id.listViewSearch);
-                    roomList_FilteredFrom.clear();
-                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
+                    roomList_Filtered.clear();
+                    mListView1.setAdapter(new ArrayAdapter<Node>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
 
                     int dpValue = 5; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -263,8 +268,11 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                     toText.setVisibility(View.VISIBLE);
                     dirButt.setVisibility(View.VISIBLE);
                     outdoor.setVisibility(View.VISIBLE);
+                    locationcheck.setVisibility(View.VISIBLE);
+                    if (locationcheck.isChecked()) {
+                        areaSpinner.setVisibility(View.VISIBLE);
+                    }
                     searchlayout.setVisibility(View.GONE);
-                    locationcheck.setVisibility(View.GONE);
 
                     int dpValue = 76; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -300,19 +308,22 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                 EditText fromText = (EditText)findViewById(R.id.toSearch);
                 String search = fromText.getText().toString().toLowerCase();
                 if(!search.equals("") ) {
-                    roomList_FilteredTo.clear();
-                    for(String room : roomList) {
-                        if(room.toLowerCase().contains(search)) {
-                            roomList_FilteredTo.add(room);
+                    roomList_Filtered.clear();
+                    for(Node room : roomList) {
+                        if(room.toString().toLowerCase().contains(search)) {
+                            roomList_Filtered.add(room);
                         }
                     }
-                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList_FilteredTo));
+                    mListView1.setAdapter(new ArrayAdapter<Node>(getBaseContext(), android.R.layout.simple_list_item_1, roomList_Filtered));
+
                 } else {
-                    roomList_FilteredTo.clear();
-                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
+                    endKey = null;
+                    roomList_Filtered.clear();
+                    mListView1.setAdapter(new ArrayAdapter<Node>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
                 }
                 setStartButton();
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // Do Nothing
@@ -330,10 +341,12 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                     fromText.setVisibility(View.GONE);
                     dirButt.setVisibility(View.GONE);
                     outdoor.setVisibility(View.GONE);
+                    locationcheck.setVisibility(View.GONE);
+                    areaSpinner.setVisibility(View.GONE);
                     searchlayout.setVisibility(View.VISIBLE);
                     ListView mListView1 = (ListView)findViewById(R.id.listViewSearch);
-                    roomList_FilteredTo.clear();
-                    mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
+                    roomList_Filtered.clear();
+                    mListView1.setAdapter(new ArrayAdapter<Node>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
 
                     int dpValue = 5; // margin in dips
                     float d = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -348,6 +361,10 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                     fromText.setVisibility(View.VISIBLE);
                     dirButt.setVisibility(View.VISIBLE);
                     outdoor.setVisibility(View.VISIBLE);
+                    locationcheck.setVisibility(View.VISIBLE);
+                    if (locationcheck.isChecked()) {
+                        areaSpinner.setVisibility(View.VISIBLE);
+                    }
                     searchlayout.setVisibility(View.GONE);
 
                     int dpValue = 146; // margin in dips
@@ -409,83 +426,103 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
         String searchFrom = fromText.getText().toString().toLowerCase();
         EditText toText = (EditText)findViewById(R.id.toSearch);
         String searchTo = toText.getText().toString().toLowerCase();
-        if (!checkIfValidDirection(searchFrom)) {
-            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("Direction Error");
-            alertDialog.setMessage("Location " + searchFrom + " cannot be found.");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
-        } else if (!checkIfValidDirection(searchTo)) {
-            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("Direction Error");
-            alertDialog.setMessage("Location " + searchTo + " cannot be found.");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
-        } else {
-            // TODO
-            CheckBox outdoor = (CheckBox) findViewById(R.id.checkBoxOutdoors);
-            Intent intent = new Intent(this, BCIT_Map.class);
-            intent.putExtra("fromLocation", searchFrom);
-            intent.putExtra("toLocation", searchTo);
-            intent.putExtra("outdoors", outdoor.isChecked());
-            startActivity(intent);
-        }
-    }
-
-    protected boolean checkIfValidDirection(String location){
-        for (String room : roomList) {
-            if (location.equals(room.toLowerCase())) {
-                return true;
+        if (startKey == null) {
+            startKey = getValidDirection(searchFrom);
+            if (startKey == null) {
+                AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                alertDialog.setTitle("Direction Error");
+                alertDialog.setMessage("Location " + searchFrom + " cannot be found.");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+                return;
             }
         }
-        return false;
+        if (endKey == null) {
+            endKey = getValidDirection(searchTo);
+            if (endKey == null) {
+                AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                alertDialog.setTitle("Direction Error");
+                alertDialog.setMessage("Location " + searchTo + " cannot be found.");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+                return;
+            }
+        }
+        CheckBox outdoor = (CheckBox) findViewById(R.id.checkBoxOutdoors);
+        Intent intent = new Intent(this, BCIT_Map.class);
+        intent.putExtra("fromLocation", startKey);
+        intent.putExtra("toLocation", endKey);
+        intent.putExtra("outdoors", outdoor.isChecked());
+        startActivity(intent);
+    }
+
+    protected Integer getValidDirection(String location){
+        for (Node node : roomList) {
+            if (node.toString().equalsIgnoreCase(location)) {
+                return node.key;
+            }
+        }
+        for (Node node : roomList) {
+            if (node.toString().toLowerCase().contains(location.toLowerCase())) {
+                return node.key;
+            }
+        }
+        return null;
     }
 
     public void runLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&  ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED && mGoogleApiClient.isConnected()) {
-            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                == PackageManager.PERMISSION_GRANTED) {
+            if (mGoogleApiClient.isConnected()) {
+                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            if (location == null) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                if (location == null) {
+                    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
+                } else {
+                    //If everything went fine lets get latitude and longitude
+                    double currentLatitude = location.getLatitude();
+                    double currentLongitude = location.getLongitude();
+
+                    currentLocation = new LatLng(currentLatitude, currentLongitude);
+                }
             } else {
-                //If everything went fine lets get latitude and longitude
-                double currentLatitude = location.getLatitude();
-                double currentLongitude = location.getLongitude();
-
-                currentLocation = new LatLng(currentLatitude, currentLongitude);
+                currentLocation = null;
             }
         } else {
             ActivityCompat.requestPermissions(
                     this,
-                    new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION },
+                    new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION },
                     1
             );
-            CheckBox locationcheck = (CheckBox) findViewById(R.id.checkboxlocation);
-            locationcheck.setChecked(false);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        CheckBox locationcheck = (CheckBox) findViewById(R.id.checkboxlocation);
         switch (requestCode) {
             case 1: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
+                    locationcheck.setChecked(true);
+                    if (!mGoogleApiClient.isConnected()) {
+                        currentLocation = null;
+                        return;
+                    }
+
                     Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
                     if (location == null) {
@@ -500,8 +537,13 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
                     }
                 } else {
                     Toast.makeText(this, "Permission denied cant get your location!", Toast.LENGTH_SHORT).show();
-                    CheckBox locationcheck = (CheckBox) findViewById(R.id.checkboxlocation);
+                    Spinner areaSpinner = (Spinner) findViewById(R.id.detectspinner);
+                    EditText fromText = (EditText) findViewById(R.id.fromSearch);
                     locationcheck.setChecked(false);
+                    areaSpinner.setVisibility(View.GONE);
+                    fromText.setEnabled(true);
+                    fromText.setText("");
+                    fromText.setHint("From");
                 }
                 return;
             }
@@ -515,7 +557,6 @@ public class Directions_Menu extends AppCompatActivity implements GoogleApiClien
     @Override
     public void onConnected(Bundle bundle) {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&  ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 

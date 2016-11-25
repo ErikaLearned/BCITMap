@@ -54,5 +54,18 @@ public class Node {
         return distance;
     }
 
+    @Override
+    public String toString() {
+        String name = "";
+        if (!this.roomNum.equals("")) {
+            name = this.roomNum;
+        } else if (!this.roomName.equals("")) {
+            name = this.roomName;
+        } else {
+            name = this.key.toString();
+        }
+        return this.building + "-" + name;
+    }
+
 }
 
