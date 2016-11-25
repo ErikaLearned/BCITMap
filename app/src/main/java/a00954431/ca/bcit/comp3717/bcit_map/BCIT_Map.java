@@ -70,6 +70,11 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     float turnOffBuildingLabels = (float) 16.5;
     float maxZoom = 14.0f;
 
+    // Node Testing Vars
+    int count = 46;
+    ArrayList<Polyline> nodeLinesDebug = new ArrayList<Polyline>();
+    ArrayList<Marker> nodeMarkersDebug = new ArrayList<Marker>();
+
     GroundOverlay groundOverlaysSE[] = new GroundOverlay[14];
 
     ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
@@ -107,7 +112,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        if (ni == null || ni.getType() != ConnectivityManager.TYPE_WIFI) {
+        if (ni == null) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Cant get maps");
             alertDialog.setMessage("Cannot load campus map without internet connection");
@@ -196,10 +201,49 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                Log.d("X", latLng.toString());
-
+                Log.d("X", latLng.toString() + " - " + Integer.toString(count));
+                IconGenerator icon = new IconGenerator(getBaseContext());
+            /*
+                // Set markers
+                Bitmap iconBitmap = icon.makeIcon(Integer.toString(count));
+                Marker mark = mMap.addMarker(new MarkerOptions().position(latLng));
+                mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+                count++; */
             }
         });
+
+    }
+
+    public void nodeDebug(int floor) {
+        for (Marker mark : nodeMarkersDebug) {
+            mark.remove();
+        }
+        for (Polyline line : nodeLinesDebug) {
+            line.remove();
+        }
+        nodeLinesDebug.clear();
+        nodeMarkersDebug.clear();
+        IconGenerator icon = new IconGenerator(getBaseContext());
+        ArrayList<Node> dblist = NodeDir.mapDB.getNodesByFloor(floor);
+        if (dblist == null) {
+            return;
+        }
+        for (Node node : dblist) {
+            Bitmap iconBitmap = icon.makeIcon(Integer.toString(node.key));
+            Marker mark = mMap.addMarker(new MarkerOptions().position(node.loc));
+            mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
+            nodeMarkersDebug.add(mark);
+        }
+        for (Node node : dblist) {
+            for (Integer nei : node.neighbours) {
+                PolylineOptions options = new PolylineOptions().width(5).color(Color.RED);
+                options.add(node.loc);
+                Node n = NodeDir.mapDB.getNodeByKey(nei);
+                options.add(n.loc);
+                Polyline line = mMap.addPolyline(options);
+                nodeLinesDebug.add(line);
+            }
+        }
 
     }
 
@@ -328,6 +372,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 break;
             }
         }
+      //  nodeDebug(floorNum);
         if (mMap.getCameraPosition().zoom > turnOffAtZoom) {
             setBuildingsOverlayVisible(true);
         } else {
