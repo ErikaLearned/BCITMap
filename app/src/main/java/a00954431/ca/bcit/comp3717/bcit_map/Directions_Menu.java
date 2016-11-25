@@ -1,7 +1,9 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,15 +11,22 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +46,12 @@ public class Directions_Menu extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_directions_menu);
 
-        Button dirButt = (Button) findViewById(R.id.getDirections);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        final Button dirButt = (Button) findViewById(R.id.getDirections);
         dirButt.setEnabled(false);
+
+        final CheckBox outdoor = (CheckBox) findViewById(R.id.checkBoxOutdoors);
 
         ArrayList<Node> dbList = NodeDir.mapDB.getAllNodes();
 
@@ -49,7 +62,7 @@ public class Directions_Menu extends AppCompatActivity {
                 roomList.add(node.building + "-" + node.roomName);
             }
         }
-
+/*
         ListView listViewFrom = (ListView)findViewById(R.id.listViewFrom);
         ListView listViewTo = (ListView)findViewById(R.id.listViewTo);
 
@@ -71,13 +84,15 @@ public class Directions_Menu extends AppCompatActivity {
                 EditText toText = (EditText)findViewById(R.id.toSearch);
                 toText.setText((String)parent.getItemAtPosition(position));
             }
-        });
+        }); */
 
-        EditText fromText = (EditText)findViewById(R.id.fromSearch);
+        final EditText fromText = (EditText)findViewById(R.id.fromSearch);
+        final EditText toText = (EditText)findViewById(R.id.toSearch);
+
         fromText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ListView mListView1 = (ListView)findViewById(R.id.listViewFrom);
+          /*      ListView mListView1 = (ListView)findViewById(R.id.listViewFrom);
                 EditText fromText = (EditText)findViewById(R.id.fromSearch);
                 String search = fromText.getText().toString().toLowerCase();
                 if(!search.equals("") ) {
@@ -93,23 +108,73 @@ public class Directions_Menu extends AppCompatActivity {
                     roomList_FilteredFrom.clear();
                     mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
                 }
-                setStartButton();
+                setStartButton(); */
             }
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Do Nothing
+                // Do nothing
             }
             @Override
             public void afterTextChanged(Editable s) {
-                // Do Nothing
+                // DO Nothing
+            }
+
+        });
+
+        fromText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    toText.setVisibility(View.GONE);
+                    dirButt.setVisibility(View.GONE);
+                    outdoor.setVisibility(View.GONE);
+
+                    int dpValue = 5; // margin in dips
+                    float d = getApplicationContext().getResources().getDisplayMetrics().density;
+                    int margin = (int)(dpValue * d); // margin in pixels
+
+                    EditText ev = (EditText)findViewById(R.id.fromSearch);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)ev.getLayoutParams();
+                    params.setMargins(0, margin, 0, 0); //substitute parameters for left, top, right, bottom
+                    ev.setLayoutParams(params);
+
+                }else {
+                    toText.setVisibility(View.VISIBLE);
+                    dirButt.setVisibility(View.VISIBLE);
+                    outdoor.setVisibility(View.VISIBLE);
+
+                    int dpValue = 76; // margin in dips
+                    float d = getApplicationContext().getResources().getDisplayMetrics().density;
+                    int margin = (int)(dpValue * d); // margin in pixels
+
+                    EditText ev = (EditText)findViewById(R.id.fromSearch);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)ev.getLayoutParams();
+                    params.setMargins(0, margin, 0, 0); //substitute parameters for left, top, right, bottom
+                    ev.setLayoutParams(params);
+                }
             }
         });
 
-        EditText toText = (EditText)findViewById(R.id.toSearch);
+        fromText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId== EditorInfo.IME_ACTION_DONE){
+                    //Clear focus here from edittext
+                    fromText.clearFocus();
+                  //  fromText= this.getCurrentFocus();
+                    if (fromText != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(fromText.getWindowToken(), 0);
+                    }
+                }
+                return false;
+            }
+        });
+
         toText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ListView mListView1 = (ListView)findViewById(R.id.listViewTo);
+            /*    ListView mListView1 = (ListView)findViewById(R.id.listViewTo);
                 EditText fromText = (EditText)findViewById(R.id.toSearch);
                 String search = fromText.getText().toString().toLowerCase();
                 if(!search.equals("") ) {
@@ -124,7 +189,7 @@ public class Directions_Menu extends AppCompatActivity {
                     roomList_FilteredTo.clear();
                     mListView1.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, roomList));
                 }
-                setStartButton();
+                setStartButton(); */
             }
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -136,6 +201,72 @@ public class Directions_Menu extends AppCompatActivity {
             }
         });
 
+        toText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    fromText.setVisibility(View.GONE);
+                    dirButt.setVisibility(View.GONE);
+                    outdoor.setVisibility(View.GONE);
+
+                    int dpValue = 5; // margin in dips
+                    float d = getApplicationContext().getResources().getDisplayMetrics().density;
+                    int margin = (int)(dpValue * d); // margin in pixels
+
+                    EditText ev = (EditText)findViewById(R.id.toSearch);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)ev.getLayoutParams();
+                    params.setMargins(0, margin, 0, 0); //substitute parameters for left, top, right, bottom
+                    ev.setLayoutParams(params);
+
+                }else {
+                    fromText.setVisibility(View.VISIBLE);
+                    dirButt.setVisibility(View.VISIBLE);
+                    outdoor.setVisibility(View.VISIBLE);
+
+                    int dpValue = 146; // margin in dips
+                    float d = getApplicationContext().getResources().getDisplayMetrics().density;
+                    int margin = (int)(dpValue * d); // margin in pixels
+
+                    EditText ev = (EditText)findViewById(R.id.toSearch);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)ev.getLayoutParams();
+                    params.setMargins(0, 0, 0, margin); //substitute parameters for left, top, right, bottom
+                    ev.setLayoutParams(params);
+                }
+            }
+        });
+
+        toText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId== EditorInfo.IME_ACTION_DONE){
+                    //Clear focus here from edittext
+                    toText.clearFocus();
+                    //  fromText= this.getCurrentFocus();
+                    if (toText != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(toText.getWindowToken(), 0);
+                    }
+                }
+                return false;
+            }
+        });
+
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        View v = getCurrentFocus();
+        if (v.equals(findViewById(R.id.fromSearch)) || v.equals(findViewById(R.id.toSearch))) {
+            v.clearFocus();
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            return false;
+        } else {
+            Intent myIntent = new Intent(getApplicationContext(), Entrance_Screen.class);
+            startActivityForResult(myIntent, 0);
+            finish();
+            return  true;
+        }
+      //  return true;
     }
 
     protected  void setStartButton() {
