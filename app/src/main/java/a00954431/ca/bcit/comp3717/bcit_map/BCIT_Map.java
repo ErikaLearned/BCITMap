@@ -203,12 +203,12 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
             public void onMapClick(LatLng latLng) {
                 Log.d("X", latLng.toString() + " - " + Integer.toString(count));
                 IconGenerator icon = new IconGenerator(getBaseContext());
-
+            /*
                 // Set markers
                 Bitmap iconBitmap = icon.makeIcon(Integer.toString(count));
                 Marker mark = mMap.addMarker(new MarkerOptions().position(latLng));
                 mark.setIcon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
-                count++;
+                count++; */
             }
         });
 
