@@ -12,7 +12,7 @@ tools:context=".BCIT_Map" >
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="a00954431.ca.bcit.comp3717.bcit_map.BCIT_Map"
-        map:mapType="satellite"
+        map:mapType="normal"
         map:cameraZoom="17">
 
 
