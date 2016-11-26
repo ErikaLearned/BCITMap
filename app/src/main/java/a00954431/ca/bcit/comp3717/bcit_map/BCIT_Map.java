@@ -372,7 +372,7 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
                 break;
             }
         }
-      //  nodeDebug(floorNum);
+        //nodeDebug(floorNum);
         if (mMap.getCameraPosition().zoom > turnOffAtZoom) {
             setBuildingsOverlayVisible(true);
         } else {
@@ -385,6 +385,8 @@ public class BCIT_Map extends FragmentActivity implements OnMapReadyCallback,
     */
     protected void generateDirections(Node start, Node to, boolean outside) {
 
+        Log.d("X", start.toString() + " to " + to.toString() + " : Outside = " + Boolean.toString(outside));
+        //Log.d("X", Boolean.toString(NodeDir.mapDB.getNodeByKey(41).outside));
         LinkedBlockingQueue<Node> path = findPath(start, to, outside);
         if (path != null) {
             IconGenerator icon = new IconGenerator(this);
