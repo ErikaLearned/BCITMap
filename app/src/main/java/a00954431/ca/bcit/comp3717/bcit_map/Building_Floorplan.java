@@ -17,7 +17,6 @@ public class Building_Floorplan {
     public Building_Floorplan() {
         plans = new TreeMap<String, GroundOverlayOptions>();
 
-
         // SE12 - floors 1 to 4
         buildFloorplan(new LatLng(49.249459, -123.002017),
                 new LatLng(49.250562, -123.001254),
