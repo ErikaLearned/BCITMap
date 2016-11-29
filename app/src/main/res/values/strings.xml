@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BCIT-Map</string>
+    <string name="app_name">BCIT Edition</string>
     <string name="title_activity_bcit__map">Map</string>
     <string-array name="bcit_floors">
         <item>Floor 1</item>
