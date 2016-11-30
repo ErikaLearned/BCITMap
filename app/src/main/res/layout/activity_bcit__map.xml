@@ -20,17 +20,14 @@ tools:context=".BCIT_Map" >
             android:id="@+id/floor_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom"
+            android:layout_gravity="end|bottom"
             android:padding="14dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/white"
+            android:background="@drawable/styled_button"
+            android:textColor="@color/bcitblue"
             android:textSize="32sp"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
             android:spinnerMode="dropdown"
             android:layout_marginTop="0dp" />
-
-
-
 </fragment>
 
 
