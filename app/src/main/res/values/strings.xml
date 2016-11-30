@@ -19,5 +19,9 @@
         <item>Outside</item>
         <item>Auto-Detect (inaccurate)</item>
     </string-array>
+    <string name="butMap">MAP</string>
+    <string name="butDir">DIRECTION</string>
+    <string name="desc">Platty-the-pus</string>
+    <string name="logo">Platty-Maps</string>
 </resources>
 
