@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="bcitblue">#003E6B</color>
     <color name="bcitoj">#fe6200</color>
+    <color name="bcitojdark">#fe4000</color>
 </resources>
