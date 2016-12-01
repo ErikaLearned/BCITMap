@@ -23,4 +23,9 @@ public class Entrance_Screen extends AppCompatActivity {
         Intent intent = new Intent(this, Directions_Menu.class);
         startActivity(intent);
     }
+
+    protected void startSchedule(View v) {
+        Intent intent = new Intent(this, Schedule.class);
+        startActivity(intent);
+    }
 }

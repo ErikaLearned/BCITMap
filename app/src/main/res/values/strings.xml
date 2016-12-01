@@ -19,5 +19,6 @@
         <item>Outside</item>
         <item>Auto-Detect (inaccurate)</item>
     </string-array>
+    <string name="title_activity_schedule">Schedule</string>
 </resources>
 
