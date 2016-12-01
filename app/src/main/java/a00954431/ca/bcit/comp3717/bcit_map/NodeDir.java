@@ -45,7 +45,7 @@ public class NodeDir {
                 for (int i = 8; i < nodeData.length; ++i) {
                     nei.add(Integer.parseInt(nodeData[i]));
                 }
-                Node node = new Node(new LatLng(Double.valueOf(nodeData[0]), Double.valueOf(nodeData[1])), nodeData[2], Integer.parseInt(nodeData[3]), nodeData[4], nodeData[5], Boolean.getBoolean(nodeData[6]), Integer.parseInt(nodeData[7]), nei);
+                Node node = new Node(new LatLng(Double.valueOf(nodeData[0]), Double.valueOf(nodeData[1])), nodeData[2], Integer.parseInt(nodeData[3]), nodeData[4], nodeData[5], Integer.parseInt(nodeData[6]) == 1, Integer.parseInt(nodeData[7]), nei);
 
                 mapDB.insertNode(node);
             }

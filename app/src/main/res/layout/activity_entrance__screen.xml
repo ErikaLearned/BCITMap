@@ -8,29 +8,54 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/bcitblue"
     tools:context="a00954431.ca.bcit.comp3717.bcit_map.Entrance_Screen">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logo"
+        android:text="@string/logo"
+        android:textColor="@color/bcitoj"
+        android:textSize="35sp"
+        android:layout_centerHorizontal="true"/>
+
     <Button
-        android:text="MAP"
+        android:text="@string/butMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_map"
         android:onClick="startMap"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="130dp" />
+        android:background="@drawable/styled_button"
+        style="@style/button_text"
+        android:layout_marginTop="76dp"
+        android:layout_below="@+id/btn_directions"
+        android:layout_centerHorizontal="true" />
 
     <Button
-        android:text="DIRECTIONS"
+        android:text="@string/butDir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_directions"
         android:onClick="startDirections"
-        android:layout_alignBaseline="@+id/btn_map"
-        android:layout_alignBottom="@+id/btn_map"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:background="@drawable/styled_button"
+        style="@style/button_text"
+        android:layout_marginTop="56dp"
+        android:layout_below="@+id/platty"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/platty"
+        android:src="@drawable/platty"
+        android:adjustViewBounds="true"
+        android:maxHeight="200dp"
+        android:maxWidth="200dp"
+        android:layout_marginTop="110dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/desc"/>
 
     <Button
         android:text="SCHEDULE"

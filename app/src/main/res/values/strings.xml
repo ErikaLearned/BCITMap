@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BCIT-Map</string>
+    <string name="app_name">BCIT Edition</string>
     <string name="title_activity_bcit__map">Map</string>
     <string-array name="bcit_floors">
         <item>Floor 1</item>
@@ -19,6 +19,10 @@
         <item>Outside</item>
         <item>Auto-Detect (inaccurate)</item>
     </string-array>
-    <string name="title_activity_schedule">Schedule</string>
+    <string name="butSch">Schedule</string>
+    <string name="butMap">MAP</string>
+    <string name="butDir">DIRECTION</string>
+    <string name="desc">Platty-the-pus</string>
+    <string name="logo">Platty-Maps</string>
 </resources>
 

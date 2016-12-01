@@ -297,6 +297,66 @@ public final class MapHelper
         }
     }
 
+    public ArrayList<Node> getNodesByFloor(final int floor)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        final Cursor cursor;
+        ArrayList<Node> nodes = new ArrayList<Node>();
+
+        cursor = db.query(NODE_TABLE_NAME,
+                null,
+                FLOOR_COLUMN_NAME + " = ?",
+                new String[]
+                        {
+                                String.valueOf(floor),
+                        },
+                null,     // group by
+                null,     // having
+                null,     // order by
+                null);
+
+        cursor.moveToFirst();
+
+
+        while (!cursor.isAfterLast()) {
+
+            ArrayList<Integer> neiDB = new ArrayList<Integer>();
+
+            try {
+                JSONObject jsonObj = new JSONObject(cursor.getString(cursor.getColumnIndex(NEI_COLUMN_NAME)));
+                JSONArray jArray = jsonObj.getJSONArray("nei");
+                if (jArray != null) {
+                    for (int i=0;i<jArray.length();i++){
+                        neiDB.add(Integer.parseInt(jArray.get(i).toString()));
+                    }
+                }
+
+            } catch (JSONException e) {
+                neiDB.clear();
+            }
+
+            // Log.d("X",  cursor.getString(cursor.getColumnIndex(KEY_COLUMN_NAME)));
+
+            nodes.add(new Node(new LatLng(cursor.getDouble(cursor.getColumnIndex(LAT_COLUMN_NAME)),
+                    cursor.getDouble(cursor.getColumnIndex(LNG_COLUMN_NAME))),
+                    cursor.getString(cursor.getColumnIndex(BUILDING_COLUMN_NAME)),
+                    cursor.getInt(cursor.getColumnIndex(FLOOR_COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(ROOM_NUM_COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(ROOM_NAME_COLUMN_NAME)),
+                    (cursor.getInt(cursor.getColumnIndex(OUTSIDE_COLUMN_NAME)) == 1),
+                    cursor.getInt(cursor.getColumnIndex(KEY_COLUMN_NAME)),
+                    neiDB
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        if (nodes.isEmpty()) {
+            return null;
+        } else {
+            return nodes;
+        }
+    }
+
     public Node getNodeByRoom(String building, String room)
     {
         SQLiteDatabase db = this.getReadableDatabase();
