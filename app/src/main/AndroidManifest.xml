@@ -45,7 +45,8 @@
             android:label="Get Directions"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".Schedule"></activity>
+        <activity android:name=".Schedule" />
+        <activity android:name=".Schedule_Day"></activity>
     </application>
 
 </manifest>
