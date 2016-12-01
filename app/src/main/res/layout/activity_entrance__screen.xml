@@ -61,10 +61,12 @@
         android:text="SCHEDULE"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/btn_directions"
-        android:layout_centerHorizontal="true"
         android:id="@+id/schedule"
-        android:onClick="startSchedule"/>
+        android:onClick="startSchedule"
+        android:background="@drawable/styled_button"
+        style="@style/button_text"
+        android:layout_below="@+id/btn_map"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
