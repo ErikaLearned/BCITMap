@@ -17,6 +17,8 @@ import java.io.IOException;
 public class Schedule_Manager extends Activity {
     private String TAG = this.getClass().getName();
     private String fileName = "schedule.txt";
+    private int maxTries = 5;
+    private boolean createdFile;
     private String fileContents;
     private File file;
     private File directory;
@@ -25,23 +27,36 @@ public class Schedule_Manager extends Activity {
     private FileInputStream inputStream;
 
     public Schedule_Manager() {
+        int count = 0;
+        createdFile = true; // default
         context = getApplicationContext();
         directory = context.getFilesDir();
         file = new File(directory, fileName);
-        createFile();
+
+        while (!createFile() && count < maxTries) {
+            count ++;
+            if (count == maxTries) {
+                createdFile = false;
+            }
+        }
     }
 
     private boolean createFile() {
-        boolean created = false;
+        boolean created = true; // file assumed to exist
         if (!file.exists()) {
             try {
                 created = file.createNewFile();
             } catch (IOException e) {
                 Log.e(TAG, "Failed to create " + fileName
                         + " in " + getClass().getEnclosingMethod().getName());
+                created = false;
             }
         }
         return created;
+    }
+
+    public boolean fileExists() {
+        return createdFile;
     }
 
     public boolean writeSchedule(String message) {
