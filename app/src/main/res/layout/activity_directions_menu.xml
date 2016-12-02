@@ -10,6 +10,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/bcitblue"
     tools:context="a00954431.ca.bcit.comp3717.bcit_map.Directions_Menu">
 
     <Button
@@ -22,7 +23,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/styled_button"
+        style="@style/button_text"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -31,6 +34,7 @@
         android:ems="8"
         android:id="@+id/toSearch"
         android:hint="To"
+        android:textColor="#FFFFFF"
         android:layout_above="@+id/getDirections"
         android:layout_marginBottom="146dp"
         android:layout_alignParentRight="true"
@@ -48,7 +52,8 @@
         android:id="@+id/checkBoxOutdoors"
         android:layout_above="@+id/getDirections"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="#FFFFFF"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -57,6 +62,7 @@
         android:ems="8"
         android:id="@+id/fromSearch"
         android:hint="From"
+        android:textColor="#FFFFFF"
         android:textAlignment="center"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -92,6 +98,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/checkboxlocation"
+        android:textColor="#FFFFFF"
         android:layout_alignParentTop="true"
         android:layout_marginTop="110dp"
         android:layout_alignParentLeft="true"
