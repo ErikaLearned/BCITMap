@@ -18,7 +18,9 @@
         android:text="@string/logo"
         android:textColor="@color/bcitoj"
         android:textSize="35sp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:typeface="monospace"
+        android:fontFamily="casual" />
 
     <Button
         android:text="@string/butMap"
