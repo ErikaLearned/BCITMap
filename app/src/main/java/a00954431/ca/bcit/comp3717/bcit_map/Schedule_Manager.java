@@ -17,6 +17,7 @@ import java.io.IOException;
 public class Schedule_Manager extends Activity {
     private String TAG = this.getClass().getName();
     private String fileName = "schedule.txt";
+    private String fileContents;
     private File file;
     private File directory;
     private Context context;
@@ -42,6 +43,36 @@ public class Schedule_Manager extends Activity {
     }
 
     public boolean readSchedule() {
+        int c;
+        fileContents = "";
+
+        try {
+            inputStream = openFileInput(fileName);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to open " + fileName
+                    + " in " + getClass().getEnclosingMethod().getName());
+            return false;
+        }
+
+        String temp="";
+        try {
+            while ((c = inputStream.read()) != -1) {
+                fileContents = fileContents + Character.toString((char) c);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to read from file " + fileName
+                    + " in " + getClass().getEnclosingMethod().getName());
+            return false;
+        }
+
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to close file " + fileName + " after reading in "
+                    + getClass().getEnclosingMethod().getName());
+            return false;
+        }
+
         return true;
     }
 }
