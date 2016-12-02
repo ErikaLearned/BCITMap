@@ -1,5 +1,7 @@
 package a00954431.ca.bcit.comp3717.bcit_map;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,14 +11,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class Schedule extends AppCompatActivity {
     private ListView listView;
     private String[] display;
+    private String filename = "schedule.txt";
+    private File schedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
+
 
         // Get ListView object and populate it ((DUMMY DATA ATM))
         listView = (ListView) findViewById(R.id.schedule_list);
