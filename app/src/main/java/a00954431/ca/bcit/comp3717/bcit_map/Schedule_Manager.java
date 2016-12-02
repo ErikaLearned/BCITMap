@@ -28,6 +28,20 @@ public class Schedule_Manager extends Activity {
         context = getApplicationContext();
         directory = context.getFilesDir();
         file = new File(directory, fileName);
+        createFile();
+    }
+
+    private boolean createFile() {
+        boolean created = false;
+        if (!file.exists()) {
+            try {
+                created = file.createNewFile();
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to create " + fileName
+                        + " in " + getClass().getEnclosingMethod().getName());
+            }
+        }
+        return created;
     }
 
     public boolean writeSchedule(String message) {
